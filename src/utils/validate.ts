@@ -62,7 +62,7 @@ const addusersInputValidation = (data: unknown) => {
     password: Joi.string()
       .regex(
         constants.validators.validateSignupInput.patterns.password,
-        "password"
+        "password",
       )
       .min(6)
       .max(15)
@@ -215,15 +215,13 @@ const addotpInputValidation = (data: unknown) => {
 
 const validateOtpVerifyInput = (data: unknown) => {
   const schema: ObjectSchema = Joi.object({
-    email: Joi.string().email().required().messages({
-      "string.base": "Email must be a string.",
-      "string.email": "Email must be a valid email address.",
-      "any.required": "Email is required.",
-    }),
-    otp: Joi.string().required().messages({
-      "string.base": "OTP must be a string.",
-      "any.required": "OTP is required.",
-    }),
+    referenceId: Joi.string().optional().allow(""),
+    // email: Joi.string().email().required().messages({
+    //   "string.base": "Email must be a string.",
+    //   "string.email": "Email must be a valid email address.",
+    //   "any.required": "Email is required.",
+    // }),
+    otp: Joi.alternatives().try(Joi.string(), Joi.number()).required(),
   });
 
   return schema.validate(data);
@@ -243,7 +241,6 @@ const resendOtpInputValidation = (data: unknown) => {
 
   return schema.validate(data);
 };
-
 
 export {
   validateSigninInput,

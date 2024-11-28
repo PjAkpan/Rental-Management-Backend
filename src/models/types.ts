@@ -45,7 +45,7 @@ export type FindInfoParams = {
 };
 
 export type pinShemType = {
-  Id?: string;
+  id: string;
   deviceId: string;
   fcmToken?: string;
   userId: string;
@@ -54,7 +54,7 @@ export type pinShemType = {
   Helpers.Timestamps;
 
 export type otpShemType = {
-  Id?: string;
+  id: string;
   initiatorId: string;
   otpNumber: string | number;
   referenceId: string;

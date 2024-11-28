@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { DataTypes } from "sequelize";
+import { DataTypes, Op } from "sequelize";
 import { otpShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
 import { logger } from "netwrap";
-
-
 
 const OtpSchema = DBconnect.define(
   "tblOtp",
@@ -48,7 +46,7 @@ const OtpSchema = DBconnect.define(
   },
 );
 
-//OtpSchema.sync({ alter: true });
+//OtpSchema.sync({ force: true });
 
 export const OtpModel = OtpSchema;
 
@@ -63,7 +61,10 @@ export const saveOtp = async (data: Record<string, unknown>) => {
       payload: newOtp,
     };
   } catch (err) {
-    logger("Error creating Otp:", { shouldLog: true, isError: true });
+    logger(`Error in saveOtp: ${err}`, {
+      shouldLog: true,
+      isError: true,
+    });
     return {
       status: false,
       statusCode: HttpStatusCode.InternalServerError,
@@ -75,6 +76,7 @@ export const saveOtp = async (data: Record<string, unknown>) => {
 
 // Find a Otp by any filter
 export const findOtp = async (filter: Record<string, unknown>) => {
+  let payload = null;
   try {
     filter.raw = true;
     const Otp = await OtpModel.findOne(filter);
@@ -83,14 +85,14 @@ export const findOtp = async (filter: Record<string, unknown>) => {
         status: false,
         statusCode: HttpStatusCode.NotFound,
         message: "Otp not found",
-        payload: null,
+        payload,
       };
     }
     return {
       status: true,
       statusCode: HttpStatusCode.OK,
       message: "Otp found",
-      payload: Otp,
+      payload: Otp as otpShemType,
     };
   } catch (err) {
     logger("Error finding Otp:", { shouldLog: true, isError: true });
@@ -98,7 +100,7 @@ export const findOtp = async (filter: Record<string, unknown>) => {
       status: false,
       statusCode: HttpStatusCode.InternalServerError,
       message: (err as Error).message || "Error finding Otp",
-      payload: null,
+      payload,
     };
   }
 };
@@ -260,6 +262,49 @@ export const deleteMultipleRows = async (filter: any) => {
   }
 };
 
-export function findOtpByReferenceId(referenceId: any) {
-  throw new Error("Function not implemented.");
-}
+export const createOrUpdate = async (record: Record<string, unknown>) => {
+  try {
+    const uniqueFilter = {
+      where: {
+        [Op.or]: [
+          { referenceId: record.referenceId }, // Use referenceId or another unique field
+          { initiatorId: record.initiatorId }, // Include other necessary identifiers if applicable
+        ],
+      },
+    };
+    // Check if the OTP already exists (e.g., based on unique fields like referenceId or initiatorId)
+    const existingOtp = await OtpModel.findOne(uniqueFilter);
+
+    let otp;
+    let message;
+
+    if (existingOtp) {
+      // Update the existing OTP record
+      otp = await existingOtp.update(record);
+      message = "Otp updated successfully";
+    } else {
+      // Create a new OTP record
+      otp = await OtpModel.create(record);
+      message = "Otp created successfully";
+    }
+
+    return {
+      status: true,
+      statusCode: HttpStatusCode.OK,
+      message,
+      payload: otp,
+    };
+  } catch (err) {
+    logger(`Error in createOrUpdate: ${err}`, {
+      shouldLog: true,
+      isError: true,
+    });
+
+    return {
+      status: false,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: (err as Error).message || "Error creating or updating Otp",
+      payload: null,
+    };
+  }
+};

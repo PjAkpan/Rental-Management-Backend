@@ -4,8 +4,6 @@ import { usersShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
 import { logger } from "netwrap";
 
-
-
 const UsersSchema = DBconnect.define(
   "tblUsers",
   {

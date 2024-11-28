@@ -9,7 +9,7 @@ export type AppMailers = {
 
 export type EmailLocals = {
   logoUrl: string;
-  verifyOtp: string;
+  verifyOtp: string | number;
   contactUsLink: string;
 };
 
@@ -20,9 +20,9 @@ export type EmailOptions = {
   html: string;
 };
 
-export type User = {
+export type VerifyUser = {
   email: string;
-  otpNumber: string;
+  otpNumber: string | number;
 };
 
 // export types
