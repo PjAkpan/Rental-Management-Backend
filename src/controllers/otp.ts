@@ -8,16 +8,10 @@ import {
   uuidHelper,
 } from "../utils";
 import type { RequestHandler } from "express";
-import {
-  otpModel as importedOtpModel,
-  usersModel as importedUsersModel,
-  otpModel,
-  usersModel,
-} from "../models";
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 import { logger } from "netwrap";
 import { sendVerifyOtp } from "../templates/mailers";
-import { VerifyUser } from "@/types";
+import { otpModel, usersModel } from "../models";
 
 // // Corrected type definitions
 // type OtpRecord = {
@@ -238,7 +232,7 @@ const sendOtp = async (requestData: {
 };
 
 const verifyOtp: RequestHandler = async (req, res) => {
-  const { otp, referenceId, email } = req.body;
+  const { otp, referenceId } = req.body;
 
   try {
     // Fetch OTP and user records in parallel
@@ -254,8 +248,9 @@ const verifyOtp: RequestHandler = async (req, res) => {
         message: "Invalid OTP number.",
       });
     }
-
-    if (new Date() > otpPayload.otpTime) {
+    logger(otpPayload);
+    if (new Date() > new Date(otpPayload.otpTime)) {
+      // If OTP has expired
       return responseObject({
         res,
         statusCode: HttpStatusCode.Unauthorized,
@@ -263,8 +258,23 @@ const verifyOtp: RequestHandler = async (req, res) => {
       });
     }
 
+    if (!otpPayload.isActive) {
+      // If OTP is not active
+      return responseObject({
+        res,
+        statusCode: HttpStatusCode.Unauthorized,
+        message: "OTP is no longer active.",
+      });
+    }
+
     // Mark OTP as used (deactivate it)
-    await otpModel.updateOtpById(otpPayload.id, { isActive: false });
+    await Promise.all([
+      otpModel.updateOtpById(otpPayload.id, { isActive: false }),
+      usersModel.updateUsersById(otpPayload.initiatorId, {
+        isVerified: true,
+        isActive: true,
+      }),
+    ]);
 
     return responseObject({
       res,
@@ -281,7 +291,7 @@ const verifyOtp: RequestHandler = async (req, res) => {
 };
 
 const resendOtp: RequestHandler = async (req, res) => {
-  const { email, initiatorId, deviceId } = req.body;
+  const { email, deviceId } = req.body;
 
   try {
     const filterUser = {
