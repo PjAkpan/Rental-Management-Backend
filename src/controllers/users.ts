@@ -79,16 +79,25 @@ const addUsers: RequestHandler = async (req, res) => {
       isActive: false,
       activeSession: null,
     });
-    console.log("*******",createUsers);
+
     if (!createUsers.payload) {
       throw new Error("User creation failed: Payload is null");
     }
 
-    sendOtp({
-      userId: createUsers.payload?.id,
-      email,
-      deviceId,
-    });
+    try {
+      const otpRef = await sendOtp({
+        userId: createUsers.payload?.id,
+        email,
+        deviceId,
+      });
+      // logger(otpRef);
+      // logger(createUsers.payload);
+      createUsers.payload.dataValues.referenceId =
+        otpRef.payload.dataValues.referenceId;
+    } catch (otpError) {
+      logger(`Failed to send OTP: ${otpError}`);
+      // Optionally notify admin or log for retries
+    }
 
     return responseObject({
       res,

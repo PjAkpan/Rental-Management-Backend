@@ -248,7 +248,7 @@ const verifyOtp: RequestHandler = async (req, res) => {
         message: "Invalid OTP number.",
       });
     }
-    logger(otpPayload);
+
     if (new Date() > new Date(otpPayload.otpTime)) {
       // If OTP has expired
       return responseObject({

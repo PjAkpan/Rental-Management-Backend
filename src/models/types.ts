@@ -28,6 +28,7 @@ export type usersShemType = {
   activeSession?: ActiveSession[];
   isActive: boolean;
   isVerified?: boolean;
+  referenceId?: string;
 } & Model &
   Helpers.Timestamps;
 
