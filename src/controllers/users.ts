@@ -558,7 +558,7 @@ const logoutAllDevices: RequestHandler = async (req, res) => {
   try {
     const filter = {
       where: {
-        id: userId,
+        [Op.or]: [{ id: userId }, { deviceId: userId }],
       },
     };
     const checkUser = await usersModel.findUsers(filter);
@@ -567,7 +567,10 @@ const logoutAllDevices: RequestHandler = async (req, res) => {
     }
 
     // Clear all active sessions for this user
-    await usersModel.updateUsersById(userId, { activeSession: [] });
+    await usersModel.updateUsersById(userId, {
+      activeSession: [],
+      deviceId: checkUser.payload?.id,
+    });
 
     statusCode = HttpStatusCode.OK;
     message = "All sessions successfully logged out";
