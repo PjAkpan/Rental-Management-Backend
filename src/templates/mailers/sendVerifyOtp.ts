@@ -19,7 +19,7 @@ const template: HandlebarsTemplateDelegate<EmailLocals> =
 
 const options = (email: string, locals: EmailLocals): EmailOptions => {
   return {
-    from: '"RMB" Support',
+    from: "\"RMB\" Support",
     to: email,
     subject: "RMB | One-Time Password",
     html: template(locals),

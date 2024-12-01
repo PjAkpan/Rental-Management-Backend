@@ -7,7 +7,7 @@ import {
   responseObject,
 } from "../utils";
 import type { RequestHandler } from "express";
-import { usersModel } from "../models";
+import { UserProfileModel, usersModel } from "../models";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -58,23 +58,17 @@ const addUsers: RequestHandler = async (req, res) => {
     if (!Array.isArray(role)) {
       role = [role];
     }
-    const defaultRoles = ["customer"];
+    const defaultRoles = ["customer", "admin"];
     const mergedRoles = Array.from(new Set([...defaultRoles, ...role]));
     role = mergedRoles.join(",");
 
     const createUsers = await usersModel.saveUsers({
       password: bcrypt.hashSync(password, 8),
       email,
-      fullName,
-      phoneNumber,
       deviceId,
-      roomNumber,
-      profileImage,
       role,
       ipAddress: Array.isArray(ipAddress) ? ipAddress : [ipAddress],
       isVerified: false,
-      homeAddress: null,
-      occupation: null,
       isDeleted: false,
       isActive: false,
       activeSession: null,
@@ -83,7 +77,17 @@ const addUsers: RequestHandler = async (req, res) => {
     if (!createUsers.payload) {
       throw new Error("User creation failed: Payload is null");
     }
-
+    await UserProfileModel.saveUsersProfile({
+      profileId: createUsers.payload.id,
+      email,
+      fullName,
+      phoneNumber,
+      roomNumber,
+      profileImage,
+      homeAddress: null,
+      occupation: null,
+      isDeleted: false,
+    });
     try {
       const otpRef = await sendOtp({
         userId: createUsers.payload?.id,
