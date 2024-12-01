@@ -13,31 +13,17 @@ const UsersSchema = DBconnect.define(
       allowNull: false,
       primaryKey: true,
     },
-    fullName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    phoneNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+
     deviceId: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    roomNumber: {
-      type: DataTypes.STRING,
-      allowNull: false,
     },
 
     role: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    profileImage: {
-      type: DataTypes.TEXT,
-      allowNull: true, // Optional
-    },
+
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -47,14 +33,7 @@ const UsersSchema = DBconnect.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    homeAddress: {
-      type: DataTypes.TEXT,
-      allowNull: true, // Optional
-    },
-    occupation: {
-      type: DataTypes.TEXT,
-      allowNull: true, // Optional
-    },
+
     ipAddress: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true, // Optional
