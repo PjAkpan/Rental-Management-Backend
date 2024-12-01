@@ -384,6 +384,7 @@ const loginUsers: RequestHandler = async (req, res) => {
     };
     await usersModel.updateUsersById(loginUserService.payload.id, {
       activeSession: updateData,
+      deviceId: deviceId,
     });
     statusCode = HttpStatusCode.OK;
     message = "Login successful";
