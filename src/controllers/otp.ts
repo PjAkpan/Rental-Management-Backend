@@ -163,11 +163,7 @@ const sendOtp = async (requestData: {
   try {
     const filterUser = {
       where: {
-        [Op.or]: [
-          { id: requestData.userId },
-          { email: requestData.email },
-          { deviceId: requestData.deviceId },
-        ],
+        [Op.or]: [{ id: requestData.userId }, { email: requestData.email }],
       },
     };
 
@@ -193,7 +189,8 @@ const sendOtp = async (requestData: {
         saveAccount.status === true ? "Otp request sent" : saveAccount.message;
       payload = saveAccount.status === true ? saveAccount.payload : [];
       success = saveAccount.status === true;
-
+      // console.log({ first: UserInfo.email, sec: requestData.email });
+      // console.log("44444444");
       // Safely access UserInfo.email
       const mailSent = await sendVerifyOtp({
         email: UserInfo.email ?? requestData.email,
