@@ -1,7 +1,7 @@
 {
-  "name": "ness-fee",
+  "name": "rental_management_support",
   "version": "1.0.0",
-  "description": "ajora",
+  "description": "RMB",
   "main": "app.js",
   "scripts": {
     "test": "jest",

@@ -19,9 +19,9 @@ const template: HandlebarsTemplateDelegate<EmailLocals> =
 
 const options = (email: string, locals: EmailLocals): EmailOptions => {
   return {
-    from: '"Ajora" Support',
+    from: '"RMB" Support',
     to: email,
-    subject: "Ajora | One-Time Password",
+    subject: "RMB | One-Time Password",
     html: template(locals),
   };
 };
