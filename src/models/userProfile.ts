@@ -84,3 +84,31 @@ export const saveUsersProfile = async (data: Record<string, unknown>) => {
     };
   }
 };
+
+export const findUsers = async (filter: Record<string, unknown>) => {
+  try {
+    filter.raw = true;
+    const Users = await UserProfileModel.findOne(filter);
+    if (!Users) {
+      return {
+        status: false,
+        statusCode: HttpStatusCode.NotFound,
+        message: "Users not found",
+        payload: null,
+      };
+    }
+    return {
+      status: true,
+      statusCode: HttpStatusCode.OK,
+      message: "User already exist",
+      payload: Users as usersShemType,
+    };
+  } catch (err) {
+    return {
+      status: false,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: (err as Error).message || "Error finding Users",
+      payload: null,
+    };
+  }
+};

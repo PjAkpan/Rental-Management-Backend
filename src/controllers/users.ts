@@ -44,7 +44,7 @@ const addUsers: RequestHandler = async (req, res) => {
         phoneNumber: { [Op.like]: `%${phoneNumber}%` },
       },
     };
-    const check = await usersModel.findUsers(filter);
+    const check = await UserProfileModel.findUsers(filter);
 
     if (check.status) {
       return responseObject({
@@ -75,7 +75,7 @@ const addUsers: RequestHandler = async (req, res) => {
     });
 
     if (!createUsers.payload) {
-      throw new Error("User creation failed: Payload is null");
+      throw new Error(`User creation failed: Payload is null-----------`);
     }
     await UserProfileModel.saveUsersProfile({
       profileId: createUsers.payload.id,
@@ -358,11 +358,19 @@ const loginUsers: RequestHandler = async (req, res) => {
       getters.getAppSecrets().appInSec,
       getters.getAppSecrets().appInV,
     );
+    const resPonDec = await costomencryDecryptInternalCRYPTOJS(
+      "DE",
+      resPon.payload,
+      getters.getAppSecrets().appInSec,
+      getters.getAppSecrets().appInV,
+    );
+    console.log("resPonDec");
+    logger(resPonDec);
     const payloadResult = {
       UserId: loginUserService.payload.id,
       email: loginUserService.payload.email,
       isActive: loginUserService.payload.isActive,
-      encryptedData: resPon,
+      encryptedData: resPon.payload,
     };
     const payloadToken = {
       payloadResult,

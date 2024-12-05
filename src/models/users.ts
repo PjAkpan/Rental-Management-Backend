@@ -77,6 +77,7 @@ export const saveUsers = async (data: Record<string, unknown>) => {
       payload: newUsers,
     };
   } catch (err) {
+    console.log(err);
     return {
       status: false,
       statusCode: HttpStatusCode.InternalServerError,
@@ -102,7 +103,7 @@ export const findUsers = async (filter: Record<string, unknown>) => {
     return {
       status: true,
       statusCode: HttpStatusCode.OK,
-      message: "Users found",
+      message: "User already exist",
       payload: Users as usersShemType,
     };
   } catch (err) {
