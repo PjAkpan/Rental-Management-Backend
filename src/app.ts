@@ -28,6 +28,36 @@ app.use(requestHeaderInspection);
 const routeFolder = path.resolve(__dirname, "./routers");
 const port = getters.getAppPort();
 
+// // Use custom middleware to capture response body
+// app.use(captureResponseBody);
+// // Define a custom stream that uses Winston
+// const winstonStream = {
+//   write: (message: any) => {
+//     // Log the message as 'info' level to Winston
+//     CustomWinstonLogger("debug", message.trim(), "all inComming http request");
+//   },
+// };
+// app.use(
+//   morgan((tokens, req, res) => {
+//     const logMessage = [
+//       tokens.method(req, res),
+//       tokens.url(req, res),
+//       tokens.status(req, res),
+//       tokens.res(req, res, "content-length"),
+//       "-",
+//       tokens["response-time"](req, res),
+//       "ms",
+//       "Request Body:",
+//       JSON.stringify(req.body),
+//       "Response Body:",
+//       JSON.stringify(res.locals.body),
+//     ].join(" ");
+
+//     winstonStream.write(logMessage);
+//     return null; // Returning null because we are handling the logging manually
+//   }),
+// );
+
 // Load routes with a service prefix
 const customWildcardHandler = (req: Request, res: Response) => {
   res.status(404).json({ message: "Custom Not Found" });
