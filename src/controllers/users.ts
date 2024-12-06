@@ -313,9 +313,14 @@ const loginUsers: RequestHandler = async (req, res) => {
     if (loginUserService.payload.isActive == false) {
       throw createHttpError("Account not active", HttpStatusCode.Forbidden);
     }
+
     // Handle single-session logic
     const activeSession = loginUserService.payload.activeSession?.[0];
     if (activeSession && activeSession.deviceId !== deviceId) {
+      payload = {
+        deviceId: loginUserService.payload.deviceId,
+        userId: loginUserService.payload.id,
+      };
       // Verify if the token in the active session is still valid
       jwt.verify(
         activeSession.token,
@@ -327,11 +332,10 @@ const loginUsers: RequestHandler = async (req, res) => {
               "Previous session token is invalid or expired. Proceeding with login.",
             );
           } else {
-            throw createHttpError(
-              // eslint-disable-next-line max-len
-              "You are already logged in on another device. Please log out from that device first.",
-              HttpStatusCode.Forbidden,
-            );
+            message =
+              "You are already logged in on another device. Please log out from that device first.";
+            //  return errorHandler({}, payload, message);
+            throw createHttpError(message, HttpStatusCode.Forbidden);
           }
         },
       );
@@ -341,7 +345,7 @@ const loginUsers: RequestHandler = async (req, res) => {
         "Previous session token is invalid or expired. Proceeding with login.",
       );
     }
-
+    console.log(payload, "--------");
     const payload2Result = {
       UserId: loginUserService.payload.id,
       fullName: loginUserService.payload.fullName,
@@ -411,7 +415,7 @@ const loginUsers: RequestHandler = async (req, res) => {
   } catch (err) {
     const errorResponse = errorHandler(
       err,
-      null,
+      payload,
       message,
       "Login function error",
     );
