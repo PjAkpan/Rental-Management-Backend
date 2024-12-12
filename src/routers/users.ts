@@ -68,6 +68,14 @@ const serviceLoader: RouteHandler[] = [
       controllers.users.logoutAllDevices,
     ],
   },
+  {
+    path: joinUrls([constants.urls.users.viewAUsersProfile().path]),
+    method: constants.urls.users.viewAUsersProfile().method,
+    handlers: [
+      verifyMiddleware.validateVeiwAllInput,
+      controllers.users.fetchUsersProfile,
+    ],
+  },
 ];
 
 export default serviceLoader;
