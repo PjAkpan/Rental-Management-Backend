@@ -14,6 +14,7 @@ export const urls = {
     modifyUsers: () => routeCreator("update", "put"),
     viewSingleUsers: () => routeCreator("view/:id"),
     viewAllUsers: () => routeCreator("fetch/all"),
+    viewAUsersProfile: () => routeCreator("profile/:id"),
   },
   resources: {
     check: () => routeCreator("check"),
@@ -24,10 +25,10 @@ export const urls = {
     check: () => routeCreator("check"),
     createOtp: () => routeCreator("add", "post"),
     verifyOtp: () => routeCreator("verify", "post"),
-    resendOtp: () => routeCreator("resend", "post")
+    resendOtp: () => routeCreator("resend", "post"),
   },
-  bills:{
+  bills: {
     check: () => routeCreator("check"),
     createBills: () => routeCreator("payment", "post"),
-  }
+  },
 };

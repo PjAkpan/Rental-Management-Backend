@@ -75,7 +75,7 @@ const addUsers: RequestHandler = async (req, res) => {
     });
 
     if (!createUsers.payload) {
-      throw new Error(`User creation failed: Payload is null-----------`);
+      throw new Error("User creation failed: Payload is null-----------");
     }
     await UserProfileModel.saveUsersProfile({
       profileId: createUsers.payload.id,
@@ -614,7 +614,52 @@ const logoutAllDevices: RequestHandler = async (req, res) => {
   }
 };
 
+const fetchUsersProfile: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  let payload = null;
+  try {
+    const filter = {
+      where: { profileId: id }, // Filter by user ID
+      attributes: [
+        "profileId",
+        "email",
+        "fullName",
+        "roomNumber",
+        "phoneNumber",
+        "profileImage",
+        "homeAddress",
+        "occupation",
+      ],
+    };
+    const response = await UserProfileModel.findUsers(filter);
+
+    if (!response.status) {
+      return responseObject({
+        res,
+        statusCode: response.statusCode,
+        message: response.message,
+        payload: response.payload,
+      });
+    }
+
+    payload = response.payload;
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.OK,
+      message: "Successfully fetched all records",
+      payload,
+    });
+  } catch (err) {
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: errorHandler(err, null).message,
+    });
+  }
+};
+
 export {
+  fetchUsersProfile,
   loginUsers,
   checkServiceHealth,
   addUsers,
