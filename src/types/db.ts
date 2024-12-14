@@ -25,16 +25,16 @@ export type DBconfigType = {
   ORACLEPASSWORD: string;
 };
 
-
 export type AppUrlsType = {
   backendPort: string | undefined;
   frontendUrl: string;
   backendUrl: string;
+  backendAssetUrl?: string;
 };
 
-export type mailerType ={
-   fromAddress: string | undefined;
+export type mailerType = {
+  fromAddress: string | undefined;
   server: string | undefined;
   username: string | undefined;
   password: string | undefined;
-}
+};

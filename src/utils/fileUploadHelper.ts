@@ -3,6 +3,7 @@
 import path from "path";
 import fs from "fs";
 import fileUpload from "express-fileupload";
+import { getters } from "../config";
 
 // Function to upload files
 export const uploadFiles = async (
@@ -28,7 +29,8 @@ export const uploadFiles = async (
   for (const file of files) {
     const filePath = path.join(userUploadPath, file.name);
     await file.mv(filePath); // Move file to the user-specific folder
-    filePaths.push(`/uploads/${folderName}/${userId}/${file.name}`); // Store the relative file path
+    const fileUrl = `${getters.getAppUrls().backendAssetUrl}uploads/${folderName}/${userId}/${file.name}`;
+    filePaths.push(fileUrl);
   }
 
   return filePaths; // Return an array of file paths

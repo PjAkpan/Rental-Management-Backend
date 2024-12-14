@@ -1,7 +1,8 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Sequelize } from "sequelize";
 import { maintenanceShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
 import { FindOptions } from "sequelize";
+import { MaintenanceFilePathModel } from "./maintenanceFiles";
 
 const MaintenanceSchema = DBconnect.define(
   "tblMaintenance",
@@ -103,7 +104,18 @@ export const findMaintenance = async (filter: Record<string, unknown>) => {
 export const findAll = async (filter: FindOptions) => {
   try {
     const [allRecords, recordCount] = await Promise.all([
-      MaintenanceModel.findAll(filter),
+      MaintenanceModel.findAll({
+        ...filter,
+        include: [
+          {
+            model: MaintenanceFilePathModel,
+            as: "files", // Alias if needed
+            on: Sequelize.literal(
+              "\"tblMaintenance\".\"id\" = \"files\".\"requestId\"::uuid",
+            ),
+          },
+        ],
+      }),
       MaintenanceModel.count({
         where: filter.where,
       }),

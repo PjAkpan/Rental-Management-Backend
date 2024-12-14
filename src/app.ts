@@ -13,6 +13,7 @@ import { logger } from "netwrap";
 import path from "path";
 import requestIp from "request-ip";
 import fileUpload from "express-fileupload";
+import { joinTables } from "./models";
 
 const app = express();
 
@@ -60,6 +61,7 @@ loadRoutes(routeFolder, app, "/api")
     // Place wildcard route after all other routes
     app.use(customWildcardHandler);
     await postgresLoader();
+    await joinTables.setupAssociations();
     app.listen(port, () => {
       logger(`${getters.geti18ns().LOGS.RUNNING_APP} ${port}`);
       logger(`Running on - ${getters.getNodeEnv()}`);

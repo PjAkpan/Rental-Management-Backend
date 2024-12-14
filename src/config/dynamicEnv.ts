@@ -83,13 +83,14 @@ const databasesUrls: Record<Env["NODE_ENV"], DBconfigType> = {
 const frontendUrls = (port: number) => ({
   production: "https://loudinsight.com",
   development: `http://localhost:${port}`,
-  staging: "https://staging.loudinsight.top",
+  staging: "https://rental-management-backend.onrender.com",
 });
 
 const backendUrls = (port: number, urlFilter = "") => ({
-  production: `https://loudinsight.com/api/${urlFilter}`,
+  production: `https://rental-management-backend.onrender.com/api/${urlFilter}`,
   development: `http://localhost:${port}/api/${urlFilter}`,
-  staging: `https://staging.loudinsight.top/api/${urlFilter}`,
+  staging: `https://rental-management-backend.onrender.com/api/${urlFilter}`,
+  assetUrl: "https://rental-management-backend.onrender.com/",
 });
 
 const appUrls: AppUrlsType = {
@@ -100,6 +101,7 @@ const appUrls: AppUrlsType = {
   backendUrl: backendUrls(process.env.APP_PORT as any)[
     process.env.NODE_ENV as Env["NODE_ENV"]
   ],
+  backendAssetUrl: backendUrls(process.env.APP_PORT as any)["assetUrl"],
 };
 
 const isStaging = process.env.NODE_ENV;
