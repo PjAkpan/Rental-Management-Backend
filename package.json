@@ -28,6 +28,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "@metrobuzz/express-routes-loader": "^0.0.1",
+    "@types/express-fileupload": "^1.5.1",
     "@types/form-data": "^2.5.0",
     "@types/jwt-decode": "^3.1.0",
     "@types/request-ip": "^0.0.38",
@@ -51,6 +52,7 @@
     "module-alias": "^2.2.2",
     "moment": "^2.30.1",
     "mongoose": "^6.13.3",
+    "morgan": "^1.10.0",
     "mysql2": "^3.11.3",
     "netwrap": "^3.0.2",
     "niggamomentrouter": "^1.0.4",
@@ -86,6 +88,7 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.97",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^22.8.6",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.9",

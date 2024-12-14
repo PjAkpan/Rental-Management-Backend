@@ -64,3 +64,17 @@ export type otpShemType = {
   otpTime: Date;
 } & Model &
   Helpers.Timestamps;
+
+export type maintenanceShemType = {
+  Id?: string;
+  id?: string;
+  subject: string;
+  userId: string;
+  description: string;
+  pictureProof: string;
+  videoProof: string;
+  referenceId: string;
+  status: string;
+  isActive: boolean;
+} & Model &
+  Helpers.Timestamps;

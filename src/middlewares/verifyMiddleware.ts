@@ -18,6 +18,8 @@ import {
   updateotpInputValidation,
   validateOtpVerifyInput,
   resendOtpInputValidation,
+  addmaintenanceInputValidation,
+  updatemaintenanceInputValidation,
 } from "../utils/validate";
 import { usersModel } from "../models";
 
@@ -51,8 +53,10 @@ const checkIfUserIsVerified: RequestHandler = async (req, res, next) => {
 };
 
 const createValidationMiddleware = (
-  validationFn: (data: object) => { error?: { details: { message: string }[] } },
-  target: Helpers.ValidationTarget = "body"
+  validationFn: (data: object) => {
+    error?: { details: { message: string }[] };
+  },
+  target: Helpers.ValidationTarget = "body",
 ): RequestHandler => {
   return (req: Helpers.ExtendedRequest, res: Response, next: NextFunction) => {
     let statusCode = 500;
@@ -60,9 +64,15 @@ const createValidationMiddleware = (
 
     try {
       const dataToValidate =
-        target === "body" ? req.body : target === "query" ? req.query : req.params;
+        target === "body"
+          ? req.body
+          : target === "query"
+            ? req.query
+            : req.params;
 
-      const { error } = validationFn(dataToValidate as { email: string; otp: string });
+      const { error } = validationFn(
+        dataToValidate as { email: string; otp: string },
+      );
       if (error) {
         statusCode = 400;
         message = error.details[0].message;
@@ -75,86 +85,96 @@ const createValidationMiddleware = (
       return responseObject({
         res,
         statusCode,
-        message: errorHandler(err as Error, null)?.message || (err as Error).message,
+        message:
+          errorHandler(err as Error, null)?.message || (err as Error).message,
       });
     }
   };
 };
 
-
 const validateOtpRequestInput = createValidationMiddleware(
-  sendOtpInputValidation
+  sendOtpInputValidation,
 );
 const validateLoginInput = createValidationMiddleware(validateSigninInput);
 
 const validateVeiwAllInput = createValidationMiddleware(
   ValidateviewAllValidation,
-  "query"
+  "query",
 );
 
 const validateCreateUsersRequest = createValidationMiddleware(
   addusersInputValidation,
-  "body"
+  "body",
 );
 
 const updateUsersInputRequest = createValidationMiddleware(
   updateusersInputValidation,
-  "body"
+  "body",
 );
 
 const validateLoginUsersRequest = createValidationMiddleware(
   validateSigninInput,
-  "body"
+  "body",
 );
 
 const validateMobileLoginUsersRequest = createValidationMiddleware(
   validateMobileSigninInput,
-  "body"
+  "body",
 );
 
 const validateUserAccountRequest = createValidationMiddleware(
   validateBankAccountVerifyinInput,
-  "body"
+  "body",
 );
 
 const validateViewBankstRequest = createValidationMiddleware(
   ValidateViewBankAllValidation,
-  "params"
+  "params",
 );
 
 const validateLogoutUsersRequest = createValidationMiddleware(
   validateUserLogoutinInput,
-  "body"
+  "body",
 );
 
 const validateCreatePinRequest = createValidationMiddleware(
   addpinInputValidation,
-  "body"
+  "body",
 );
 
 const updatePinInputRequest = createValidationMiddleware(
   updatepinInputValidation,
-  "body"
+  "body",
 );
 
 const validateCreateOtpRequest = createValidationMiddleware(
   addotpInputValidation,
-  "body"
+  "body",
 );
 
 const validateVerifyOtpRequest = createValidationMiddleware(
   validateOtpVerifyInput,
-  "body"
+  "body",
 );
 
 const updateOtpInputRequest = createValidationMiddleware(
   updateotpInputValidation,
-  "body"
+  "body",
 );
 
 const validateResendOtpRequest = createValidationMiddleware(
-  resendOtpInputValidation, 
-  "body" 
+  resendOtpInputValidation,
+  "body",
+);
+
+const validateCreateMaintenanceRequest = createValidationMiddleware(
+  addmaintenanceInputValidation,
+  "body",
+);
+
+const updateMaintenanceInputRequest = createValidationMiddleware(
+  updatemaintenanceInputValidation,
+  "body",
 );
 const verifyMiddleware = {
   checkIfUserIsVerified,
@@ -174,7 +194,8 @@ const verifyMiddleware = {
   validateVerifyOtpRequest,
   validateResendOtpRequest,
   updateOtpInputRequest,
-  
+  validateCreateMaintenanceRequest,
+  updateMaintenanceInputRequest,
 };
 
 export { verifyMiddleware };

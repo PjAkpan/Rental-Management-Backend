@@ -31,4 +31,12 @@ export const urls = {
     check: () => routeCreator("check"),
     createBills: () => routeCreator("payment", "post"),
   },
+  maintenance: {
+    check: () => routeCreator("check"),
+    createMaintenance: () => routeCreator("add", "post"),
+    deleteMaintenance: () => routeCreator("delete/:id", "delete"),
+    modifyMaintenance: () => routeCreator("update", "put"),
+    viewSingleMaintenance: () => routeCreator("view/:id"),
+    viewAllMaintenance: () => routeCreator("fetch/all"),
+  },
 };

@@ -242,6 +242,28 @@ const resendOtpInputValidation = (data: unknown) => {
   return schema.validate(data);
 };
 
+const addmaintenanceInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    subject: Joi.string().required(),
+    userId: Joi.string().required(),
+    description: Joi.string().required(),
+    pictureProof: Joi.string().optional().allow(""),
+    videoProof: Joi.string().optional().allow(""),
+  });
+  return schema.validate(data);
+};
+
+const updatemaintenanceInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
+    subject: Joi.string().optional().allow(""),
+    description: Joi.string().optional().allow(""),
+    pictureProof: Joi.string().optional().allow(""),
+    videoProof: Joi.string().optional().allow(""),
+  });
+  return schema.validate(data);
+};
+
 export {
   validateSigninInput,
   sendOtpInputValidation,
@@ -258,4 +280,6 @@ export {
   updateotpInputValidation,
   validateOtpVerifyInput,
   resendOtpInputValidation,
+  addmaintenanceInputValidation,
+  updatemaintenanceInputValidation,
 };
