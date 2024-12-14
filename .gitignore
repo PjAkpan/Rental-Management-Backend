@@ -11,3 +11,4 @@ user_emails.csv
 docker-compose.yml
 .vscode
 dist
+logs

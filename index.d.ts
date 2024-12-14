@@ -5,6 +5,7 @@ declare namespace Express {
     ACCESS_TOKEN: string;
     currentTokenDetails: unknown;
     USER_ROLES: string[];
+    body: any;
     files?:
       | { [fieldname: string]: Express.Multer.File[] }
       | Express.Multer.File[]
@@ -19,5 +20,9 @@ declare namespace Express {
     idAlias: string;
     clientIp?: string;
     textData?: string;
+  }
+
+  export interface Response {
+    locals: Record<string, any>; // Add 'locals' to Response type
   }
 }

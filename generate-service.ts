@@ -23,7 +23,7 @@ const controllerFile = {
   name: `${serviceName}.ts`,
   content: `import { HttpStatusCode, getters } from "../config";
 import { logger } from "netwrap";
-import { errorHandler, responseObject } from "../utils";
+import {addIfNotEmpty, errorHandler, responseObject } from "../utils";
 import type { RequestHandler } from "express";
 import { ${serviceName}Model } from "../models";
 import { Op } from "sequelize";
@@ -71,15 +71,18 @@ const delete${capitalizedServiceName}: RequestHandler = async (req, res) => {
 
 const modify${capitalizedServiceName}: RequestHandler = async (req, res) => {
   const { status, ${capitalizedServiceName}Id, ${capitalizedServiceName}Name } = req.body;
-  try {
+  let payload: any = {};
+   try {
     const filter = { where: { id: ${capitalizedServiceName}Id } };
     const check = await ${serviceName}Model.find${capitalizedServiceName}(filter);
 
     if (!check.status) {
       return responseObject({ res, statusCode: check.statusCode, message: check.message, payload: check.payload });
     }
-
-    const updated${capitalizedServiceName} = await ${serviceName}Model.update${capitalizedServiceName}ById(${capitalizedServiceName}Id, { name: ${capitalizedServiceName}Name, isActive: status });
+ addIfNotEmpty(payload, "description", description);
+    addIfNotEmpty(payload, "subject", subject);
+    addIfNotEmpty(payload, "userId", userId);
+    const updated${capitalizedServiceName} = await ${serviceName}Model.update${capitalizedServiceName}ById(${capitalizedServiceName}Id, payload);
     return responseObject({ res, statusCode: updated${capitalizedServiceName}.statusCode, message: updated${capitalizedServiceName}.message, payload: updated${capitalizedServiceName}.payload });
   } catch (err) {
     return responseObject({ res, statusCode: HttpStatusCode.InternalServerError, message: errorHandler(err, null).message });
@@ -101,7 +104,7 @@ const fetchAll${capitalizedServiceName}s: RequestHandler = async (req, res) => {
   try {
     const sizeNumber = parseInt(size as string) || 10;
     const pageNumber = parseInt(page as string) || 1;
-    const filter = {
+    const filter:any = {
       order: [[orderBy, sort]],
       limit: sizeNumber,
       offset: sizeNumber * (pageNumber - 1),
@@ -382,7 +385,7 @@ const routersFile = {
 import { RouteHandler } from "src/types/route";
 import { joinUrls } from "../utils";
 import controllers from "../controllers";
-import { verifyMiddleware } from "src/middlewares";
+import { verifyMiddleware } from "../middlewares";
 
 const serviceLoader: RouteHandler[] = [
   {
@@ -438,7 +441,7 @@ const validateCreate${capitalizedServiceName}Request = createValidationMiddlewar
 async function updateIndexFile(
   filePath: string,
   importStatement: string,
-  exportKey: string
+  exportKey: string,
 ) {
   try {
     let data = await fs.readFile(filePath, "utf-8");
@@ -486,7 +489,7 @@ export default {
     // Write the updated content back to the index file
     await fs.writeFile(filePath, updatedData.trim(), "utf-8");
     console.log(
-      `Updated ${filePath} successfully with sorted imports and exports.`
+      `Updated ${filePath} successfully with sorted imports and exports.`,
     );
   } catch (error) {
     console.error(`Error updating ${filePath}:`, error);
@@ -496,7 +499,7 @@ export default {
 async function updateModelIndexFile(
   filePath: string,
   importStatement: string,
-  modelName: string
+  modelName: string,
 ) {
   try {
     let data = await fs.readFile(filePath, "utf-8");
@@ -545,7 +548,7 @@ export { ${exportEntries.join(", ")} };
     // Write the updated content back to the index file
     await fs.writeFile(filePath, updatedData.trim(), "utf-8");
     console.log(
-      `Updated ${filePath} successfully with sorted model imports and exports.`
+      `Updated ${filePath} successfully with sorted model imports and exports.`,
     );
   } catch (error) {
     console.error(`Error updating ${filePath}:`, error);
@@ -604,7 +607,7 @@ export const urls = {
     // Check if the service routes already exist to prevent duplicates
     if (content.includes(`${serviceName}: {`)) {
       console.log(
-        `Routes for service '${serviceName}' already exist in urls.ts`
+        `Routes for service '${serviceName}' already exist in urls.ts`,
       );
       return;
     }
@@ -626,11 +629,11 @@ export const urls = {
 
 async function appendMiddlewareValidations(
   middlewaresPath: string,
-  serviceName: string
+  serviceName: string,
 ) {
   const verifyMiddlewarePath = path.join(
     middlewaresPath,
-    "verifyMiddleware.ts"
+    "verifyMiddleware.ts",
   );
 
   // Read existing file content
@@ -649,7 +652,7 @@ async function appendMiddlewareValidations(
     "";
   const lastConstDefinition = content.lastIndexOf("const validateVeiwAllInput");
   const verifyMiddlewareDefinition = content.indexOf(
-    "const verifyMiddleware = {"
+    "const verifyMiddleware = {",
   );
 
   // Extract the imports we need to add
@@ -659,7 +662,7 @@ async function appendMiddlewareValidations(
   // Insert new imports before the closing brace of the validate import
   const updatedImports = importSection.replace(
     '} from "../utils/validate";',
-    `${newImports}\n} from "../utils/validate";`
+    `${newImports}\n} from "../utils/validate";`,
   );
 
   // Create new middleware definitions
@@ -676,14 +679,14 @@ const update${capitalizedServiceName}InputRequest = createValidationMiddleware(
   // Find and update the verifyMiddleware object
   const verifyMiddlewareContent = content.slice(
     verifyMiddlewareDefinition,
-    content.indexOf("};", verifyMiddlewareDefinition) + 2
+    content.indexOf("};", verifyMiddlewareDefinition) + 2,
   );
 
   const updatedVerifyMiddleware = verifyMiddlewareContent.replace(
     "};",
     `validateCreate${capitalizedServiceName}Request,
   update${capitalizedServiceName}InputRequest,
-};`
+};`,
   );
 
   // Construct the final content
@@ -692,7 +695,7 @@ const update${capitalizedServiceName}InputRequest = createValidationMiddleware(
     updatedImports +
     content.slice(
       content.indexOf(importSection) + importSection.length,
-      lastConstDefinition
+      lastConstDefinition,
     ) +
     content.slice(lastConstDefinition, verifyMiddlewareDefinition) +
     newMiddlewareDefinitions +
@@ -702,6 +705,44 @@ const update${capitalizedServiceName}InputRequest = createValidationMiddleware(
 
   // Write the updated content back to the file
   await fs.writeFile(verifyMiddlewarePath, finalContent);
+}
+
+async function appendToFile(modelsPath, modelTypes) {
+  try {
+    // Ensure the directory exists
+    await fs.mkdir(modelsPath, { recursive: true });
+
+    const filePath = path.join(modelsPath, modelTypes.name);
+
+    // Read the existing file content, if any
+    let existingContent = "";
+    try {
+      existingContent = await fs.readFile(filePath, "utf8");
+    } catch (err) {
+      if (err.code !== "ENOENT") throw err; // Ignore file-not-found errors
+    }
+
+    // Check if FindInfoParams already exists in the file
+    const findInfoParamsExists = existingContent.includes(
+      "export type FindInfoParams",
+    );
+
+    // Build the new content
+    let newContent = modelTypes.content;
+    if (!findInfoParamsExists) {
+      newContent += `\nexport type FindInfoParams = {\n  orderBy?: string;\n  sort?: "ASC" | "DESC";\n  size?: number;\n  page?: number;\n  gSearch?: string;\n  filter?: Record<string, any>;\n  status?: string;\n  option?: string;\n  startDate?: string;\n  endDate?: string;\n};\n`;
+    }
+
+    // Combine existing and new content
+    const updatedContent = existingContent + newContent;
+
+    // Write the updated content back to the file
+    await fs.writeFile(filePath, updatedContent, "utf8");
+
+    console.log("Content successfully appended!");
+  } catch (err) {
+    console.error("Error appending content:", err);
+  }
 }
 
 async function createService() {
@@ -716,27 +757,28 @@ async function createService() {
     // Write controller and model files
     await fs.writeFile(
       path.join(controllersPath, controllerFile.name),
-      controllerFile.content
+      controllerFile.content,
     );
     console.log(`Created controller file: ${controllerFile.name}`);
 
     await fs.writeFile(
       path.join(modelsPath, modelFile.name),
-      modelFile.content
+      modelFile.content,
     );
     console.log(`Created model file: ${modelFile.name}`);
 
-    await fs.writeFile(
-      path.join(modelsPath, modelTypes.name),
-      modelTypes.content
-    );
+    // await fs.writeFile(
+    //   path.join(modelsPath, modelTypes.name),
+    //   modelTypes.content,
+    // );
+    await appendToFile(modelsPath, modelTypes);
 
     await appendRoutesToUrls(path.join(urlsPath), urlsFile.content.trim());
     console.log(`Created URL file: ${urlsFile.name}`);
 
     await fs.writeFile(
       path.join(routersPath, routersFile.name),
-      routersFile.content
+      routersFile.content,
     );
     console.log(`Created router file: ${routersFile.name}`);
 
@@ -745,7 +787,7 @@ async function createService() {
     await updateIndexFile(
       path.join(controllersPath, "index.ts"),
       controllerImport,
-      serviceName
+      serviceName,
     );
 
     // Update models index.ts
@@ -753,7 +795,7 @@ async function createService() {
     await updateModelIndexFile(
       path.join(modelsPath, "index.ts"),
       modelImport,
-      serviceName
+      serviceName,
     );
 
     await appendMiddlewareValidations(middlewaresPath, serviceName);

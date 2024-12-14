@@ -1,12 +1,18 @@
 import express, { Request, Response } from "express";
-
+import bodyParser from "body-parser";
 import cors from "cors";
 import { getters, postgresLoader } from "./config";
 import loadRoutes from "./utils/loadRoutes";
 import helmet from "helmet";
-import { forbiddenPaths, requestHeaderInspection } from "./middlewares";
+import {
+  captureInflowANDOutput,
+  forbiddenPaths,
+  requestHeaderInspection,
+} from "./middlewares";
 import { logger } from "netwrap";
 import path from "path";
+import requestIp from "request-ip";
+import fileUpload from "express-fileupload";
 
 const app = express();
 
@@ -17,47 +23,33 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(express.json());
+// Parse application/json requests
+app.use(express.json({ limit: "1000mb" }));
+// Register the requestIp middleware
+app.use(requestIp.mw());
+// Parse application/x-www-form-urlencoded requests
+app.use(express.urlencoded({ limit: "1000mb", extended: true }));
+// Parse text/plain requests
+app.use(bodyParser.text());
 
 app.use(helmet());
 
 app.use("*", forbiddenPaths);
 
 app.use(requestHeaderInspection);
+// enable files upload
+app.use(
+  fileUpload({
+    createParentPath: true,
+  }),
+);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const routeFolder = path.resolve(__dirname, "./routers");
 const port = getters.getAppPort();
 
-// // Use custom middleware to capture response body
-// app.use(captureResponseBody);
-// // Define a custom stream that uses Winston
-// const winstonStream = {
-//   write: (message: any) => {
-//     // Log the message as 'info' level to Winston
-//     CustomWinstonLogger("debug", message.trim(), "all inComming http request");
-//   },
-// };
-// app.use(
-//   morgan((tokens, req, res) => {
-//     const logMessage = [
-//       tokens.method(req, res),
-//       tokens.url(req, res),
-//       tokens.status(req, res),
-//       tokens.res(req, res, "content-length"),
-//       "-",
-//       tokens["response-time"](req, res),
-//       "ms",
-//       "Request Body:",
-//       JSON.stringify(req.body),
-//       "Response Body:",
-//       JSON.stringify(res.locals.body),
-//     ].join(" ");
-
-//     winstonStream.write(logMessage);
-//     return null; // Returning null because we are handling the logging manually
-//   }),
-// );
-
+// Middleware to capture response body
+app.use(captureInflowANDOutput);
 // Load routes with a service prefix
 const customWildcardHandler = (req: Request, res: Response) => {
   res.status(404).json({ message: "Custom Not Found" });

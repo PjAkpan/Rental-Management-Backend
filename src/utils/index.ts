@@ -15,3 +15,4 @@ export * from "./uuidHelper";
 export * from "./returnedObject";
 export * from "./loadRoutes";
 export * from "./CustomWinstonLogger";
+export * from "./fileUploadHelper";
