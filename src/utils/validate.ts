@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import Joi, { ObjectSchema } from "joi";
 import { constants } from "../constants";
+import moment from "moment";
 
 const validateMobileSigninInput = (data: unknown) => {
   const schema: ObjectSchema = Joi.object({
@@ -264,6 +265,64 @@ const updatemaintenanceInputValidation = (data: unknown) => {
   return schema.validate(data);
 };
 
+const addRentPaymentInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    roomNumber: Joi.string().required(),
+    userId: Joi.string().required(),
+    paymentAmount: Joi.string().required(),
+    paymentDate: Joi.alternatives()
+      .try(
+        Joi.date().raw().required(), // Accepts JavaScript `Date` objects.
+        Joi.string().custom((value, helpers) => {
+          if (
+            moment(value, "DD-MM-YYYY", true).isValid() || // Format: DD-MM-YYYY
+            moment(value, "YYYY-MM-DD", true).isValid() || // Format: YYYY-MM-DD
+            moment(value, "DD/MM/YYYY", true).isValid() || // Format: DD/MM/YYYY
+            moment(value, "YYYY/MM/DD", true).isValid() // Format: YYYY/MM/DD
+          ) {
+            return value;
+          }
+          return helpers.error("any.invalid", { value });
+        }),
+      )
+      .messages({
+        "any.invalid":
+          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
+      }),
+  });
+  return schema.validate(data);
+};
+
+const updateRentPaymentInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
+    roomNumber: Joi.string().optional().allow(""),
+    userId: Joi.string().required(),
+    paymentAmount: Joi.string().optional().allow(""),
+    // pictureProof: Joi.string().optional().allow(""),
+    paymentDate: Joi.alternatives()
+      .try(
+        Joi.date().raw().optional().allow(""), // Accepts JavaScript `Date` objects.
+        Joi.string().custom((value, helpers) => {
+          if (
+            moment(value, "DD-MM-YYYY", true).isValid() || // Format: DD-MM-YYYY
+            moment(value, "YYYY-MM-DD", true).isValid() || // Format: YYYY-MM-DD
+            moment(value, "DD/MM/YYYY", true).isValid() || // Format: DD/MM/YYYY
+            moment(value, "YYYY/MM/DD", true).isValid() // Format: YYYY/MM/DD
+          ) {
+            return value;
+          }
+          return helpers.error("any.invalid", { value });
+        }),
+      )
+      .messages({
+        "any.invalid":
+          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
+      }),
+  });
+  return schema.validate(data);
+};
+
 export {
   validateSigninInput,
   sendOtpInputValidation,
@@ -282,4 +341,6 @@ export {
   resendOtpInputValidation,
   addmaintenanceInputValidation,
   updatemaintenanceInputValidation,
+  addRentPaymentInputValidation,
+  updateRentPaymentInputValidation,
 };

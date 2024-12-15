@@ -6,7 +6,7 @@ import {
   uploadFiles,
 } from "../utils";
 import type { RequestHandler } from "express";
-import { MaintenanceFilePathModel, maintenanceModel } from "../models";
+import { RentPaymentFileModel, RentPaymentModel } from "../models";
 import fileUpload from "express-fileupload";
 
 const checkServiceHealth: RequestHandler = (_req, res) => {
@@ -17,8 +17,8 @@ const checkServiceHealth: RequestHandler = (_req, res) => {
   });
 };
 
-const addMaintenance: RequestHandler = async (req, res) => {
-  const { description, subject, userId } = req.body;
+const addRentPayment: RequestHandler = async (req, res) => {
+  const { userId, roomNumber, paymentDate, paymentAmount } = req.body;
   const files = req.files as
     | { [key: string]: fileUpload.UploadedFile }
     | undefined;
@@ -27,64 +27,62 @@ const addMaintenance: RequestHandler = async (req, res) => {
   const pictureProof = files?.pictureProof as
     | fileUpload.UploadedFile
     | undefined;
-  const videoProof = files?.videoProof as fileUpload.UploadedFile | undefined;
-
   try {
     // File validation settings
-    const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const allowedFileTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "application/pdf",
+    ];
     const maxFileSize = 5 * 1024 * 1024; // 5 MB
 
     let filePaths: string[] = [];
 
     // Upload files only if they are provided
-    if (pictureProof || videoProof) {
+    if (pictureProof) {
       const filesToUpload = [];
-      if (pictureProof) {
-        if (!allowedFileTypes.includes(pictureProof.mimetype)) {
-          return responseObject({
-            res,
-            statusCode: HttpStatusCode.BadRequest,
-            message:
-              "Invalid file type. Only JPEG, JPG, PNG, and PDF are allowed.",
-          });
-        }
-        if (pictureProof.size > maxFileSize) {
-          return responseObject({
-            res,
-            statusCode: HttpStatusCode.BadRequest,
-            message: "File size exceeds the 5 MB limit.",
-          });
-        }
-        filesToUpload.push(pictureProof);
+      if (!allowedFileTypes.includes(pictureProof.mimetype)) {
+        return responseObject({
+          res,
+          statusCode: HttpStatusCode.BadRequest,
+          message:
+            "Invalid file type. Only JPEG, JPG, PNG, and PDF are allowed.",
+        });
       }
+      if (pictureProof.size > maxFileSize) {
+        return responseObject({
+          res,
+          statusCode: HttpStatusCode.BadRequest,
+          message: "File size exceeds the 5 MB limit.",
+        });
+      }
+      if (pictureProof) filesToUpload.push(pictureProof);
 
-      if (videoProof) filesToUpload.push(videoProof);
-
-      filePaths = await uploadFiles(userId, filesToUpload, "maintenance");
+      filePaths = await uploadFiles(userId, filesToUpload, "rentPayment");
     }
 
-    // Save maintenance record (files are optional)
-    const createMaintenance = await maintenanceModel.saveMaintenance({
-      description,
-      subject,
+    const createRentPayment = await RentPaymentModel.saveRentPayment({
       userId,
+      roomNumber,
+      paymentDate,
+      paymentAmount,
     });
 
     // If files were uploaded, save file paths
     if (filePaths.length > 0) {
-      await MaintenanceFilePathModel.saveMaintenanceFiles({
+      await RentPaymentFileModel.saveRentPaymentFiles({
         userId,
-        requestId: createMaintenance.payload?.id,
+        requestId: createRentPayment.payload?.id,
         pictureProof: filePaths[0] || null, // Path for pictureProof, if exists
-        videoProof: filePaths[1] || null, // Path for videoProof, if exists
       });
     }
 
     return responseObject({
       res,
-      statusCode: createMaintenance.statusCode,
-      message: createMaintenance.message,
-      payload: createMaintenance.payload,
+      statusCode: createRentPayment.statusCode,
+      message: createRentPayment.message,
+      payload: createRentPayment.payload,
     });
   } catch (err) {
     return responseObject({
@@ -95,10 +93,10 @@ const addMaintenance: RequestHandler = async (req, res) => {
   }
 };
 
-const deleteMaintenance: RequestHandler = async (req, res) => {
+const deleteRentPayment: RequestHandler = async (req, res) => {
   const { id } = req.params;
   try {
-    const check = await maintenanceModel.findMaintenanceById(id);
+    const check = await RentPaymentModel.findRentPaymentById(id);
 
     if (!check.status) {
       return responseObject({
@@ -109,12 +107,12 @@ const deleteMaintenance: RequestHandler = async (req, res) => {
       });
     }
 
-    const deleteMaintenance = await maintenanceModel.deleteMaintenanceById(id);
+    const deleteRentPayment = await RentPaymentModel.deleteRentPaymentById(id);
     return responseObject({
       res,
-      statusCode: deleteMaintenance.statusCode,
-      message: deleteMaintenance.message,
-      payload: deleteMaintenance.payload,
+      statusCode: deleteRentPayment.statusCode,
+      message: deleteRentPayment.message,
+      payload: deleteRentPayment.payload,
     });
   } catch (err) {
     return responseObject({
@@ -125,12 +123,12 @@ const deleteMaintenance: RequestHandler = async (req, res) => {
   }
 };
 
-const modifyMaintenance: RequestHandler = async (req, res) => {
-  const { status, MaintenanceId, userId, subject, description } = req.body;
+const modifyRentPayment: RequestHandler = async (req, res) => {
+  const { requestId, roomNumber, paymentDate, paymentAmount } = req.body;
   let payload: any = {};
   try {
-    const filter = { where: { id: MaintenanceId } };
-    const check = await maintenanceModel.findMaintenance(filter);
+    const filter = { where: { id: requestId } };
+    const check = await RentPaymentModel.findRentPayment(filter);
 
     if (!check.status) {
       return responseObject({
@@ -140,20 +138,18 @@ const modifyMaintenance: RequestHandler = async (req, res) => {
         payload: check.payload,
       });
     }
-    addIfNotEmpty(payload, "description", description);
-    addIfNotEmpty(payload, "subject", subject);
-    addIfNotEmpty(payload, "userId", userId);
-
-    payload.isActive = status;
-    const updatedMaintenance = await maintenanceModel.updateMaintenanceById(
-      MaintenanceId,
+    addIfNotEmpty(payload, "roomNumber", roomNumber);
+    addIfNotEmpty(payload, "paymentAmount", paymentAmount);
+    addIfNotEmpty(payload, "paymentDate", paymentDate);
+    const updatedRentPayment = await RentPaymentModel.updateRentPaymentById(
+      requestId,
       payload,
     );
     return responseObject({
       res,
-      statusCode: updatedMaintenance.statusCode,
-      message: updatedMaintenance.message,
-      payload: updatedMaintenance.payload,
+      statusCode: updatedRentPayment.statusCode,
+      message: updatedRentPayment.message,
+      payload: updatedRentPayment.payload,
     });
   } catch (err) {
     return responseObject({
@@ -167,7 +163,7 @@ const modifyMaintenance: RequestHandler = async (req, res) => {
 const fetchSingleInfo: RequestHandler = async (req, res) => {
   const { id } = req.params;
   try {
-    const check = await maintenanceModel.findMaintenanceById(id);
+    const check = await RentPaymentModel.findRentPaymentById(id);
     return responseObject({
       res,
       statusCode: check.statusCode,
@@ -183,7 +179,7 @@ const fetchSingleInfo: RequestHandler = async (req, res) => {
   }
 };
 
-const fetchAllMaintenances: RequestHandler = async (req, res) => {
+const fetchAllRentPayments: RequestHandler = async (req, res) => {
   const { orderBy = "createdAt", sort = "DESC", size, page } = req.query;
   try {
     const sizeNumber = parseInt(size as string) || 10;
@@ -193,7 +189,7 @@ const fetchAllMaintenances: RequestHandler = async (req, res) => {
       limit: sizeNumber,
       offset: sizeNumber * (pageNumber - 1),
     };
-    const response = await maintenanceModel.findAll(filter);
+    const response = await RentPaymentModel.findAll(filter);
 
     if (!response.status) {
       return responseObject({
@@ -229,9 +225,9 @@ const fetchAllMaintenances: RequestHandler = async (req, res) => {
 
 export {
   checkServiceHealth,
-  addMaintenance,
-  modifyMaintenance,
-  deleteMaintenance,
+  addRentPayment,
+  modifyRentPayment,
+  deleteRentPayment,
   fetchSingleInfo,
-  fetchAllMaintenances,
+  fetchAllRentPayments,
 };
