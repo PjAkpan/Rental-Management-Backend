@@ -75,7 +75,7 @@ export const saveRentPayment = async (data: Record<string, unknown>) => {
     return {
       status: true,
       statusCode: HttpStatusCode.Created,
-      message: "RentPayment created successfully",
+      message: "Payment receipt uploaded successfully",
       payload: newRentPayment,
     };
   } catch (err) {
@@ -130,7 +130,7 @@ export const findAll = async (filter: FindOptions) => {
             model: RentPaymentFilePathModel,
             as: "repaymentFiles", // Alias if needed
             on: Sequelize.literal(
-              "\"tblRentPayment\".\"id\" = \"repaymentFiles\".\"requestId\"::uuid",
+              '"tblRentPayment"."id" = "repaymentFiles"."requestId"::uuid',
             ),
           },
         ],
