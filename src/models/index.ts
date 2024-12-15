@@ -6,6 +6,7 @@ import * as maintenanceModel from "./maintenance";
 import * as otpModel from "./otp";
 import * as usersModel from "./users";
 import * as RentPaymentFileModel from "./rentPaymentFiles";
+import * as tenancyPaymentModel from "./tenancyPaymentFiles";
 
 // Export all models
 export {
@@ -17,4 +18,5 @@ export {
   maintenanceModel,
   otpModel,
   usersModel,
+  tenancyPaymentModel,
 };
