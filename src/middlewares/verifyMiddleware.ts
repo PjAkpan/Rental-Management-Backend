@@ -22,6 +22,7 @@ import {
   updatemaintenanceInputValidation,
   addRentPaymentInputValidation,
   updateRentPaymentInputValidation,
+  addTenancyPaymentInputValidation,
 } from "../utils/validate";
 import { usersModel } from "../models";
 
@@ -179,15 +180,19 @@ const updateMaintenanceInputRequest = createValidationMiddleware(
   "body",
 );
 
-
 const validateCreateRentPaymentRequest = createValidationMiddleware(
   addRentPaymentInputValidation,
-  "body"
+  "body",
 );
 
 const updateRentPaymentInputRequest = createValidationMiddleware(
   updateRentPaymentInputValidation,
-  "body"
+  "body",
+);
+
+const validateCreateTenancyPaymentRequest = createValidationMiddleware(
+  addTenancyPaymentInputValidation,
+  "body",
 );
 const verifyMiddleware = {
   checkIfUserIsVerified,
@@ -211,6 +216,7 @@ const verifyMiddleware = {
   updateMaintenanceInputRequest,
   validateCreateRentPaymentRequest,
   updateRentPaymentInputRequest,
+  validateCreateTenancyPaymentRequest,
 };
 
 export { verifyMiddleware };

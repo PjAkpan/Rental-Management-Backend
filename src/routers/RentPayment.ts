@@ -13,7 +13,18 @@ const serviceLoader: RouteHandler[] = [
   {
     path: joinUrls([constants.urls.RentPayment.createRentPayment().path]),
     method: constants.urls.RentPayment.createRentPayment().method,
-    handlers: [verifyMiddleware.validateCreateRentPaymentRequest, controllers.RentPayment.addRentPayment],
+    handlers: [
+      verifyMiddleware.validateCreateRentPaymentRequest,
+      controllers.RentPayment.addRentPayment,
+    ],
+  },
+  {
+    path: joinUrls([constants.urls.RentPayment.createTenancyPayment().path]),
+    method: constants.urls.RentPayment.createTenancyPayment().method,
+    handlers: [
+      verifyMiddleware.validateCreateTenancyPaymentRequest,
+      controllers.RentPayment.addTenancyPayment,
+    ],
   },
   {
     path: joinUrls([constants.urls.RentPayment.deleteRentPayment().path]),
@@ -41,7 +52,14 @@ const serviceLoader: RouteHandler[] = [
       controllers.RentPayment.fetchAllRentPayments,
     ],
   },
-
+  {
+    path: joinUrls([constants.urls.RentPayment.viewAllTenancyPayment().path]),
+    method: constants.urls.RentPayment.viewAllTenancyPayment().method,
+    handlers: [
+      verifyMiddleware.validateVeiwAllInput,
+      controllers.RentPayment.fetchAllTenancyPayments,
+    ],
+  },
 ];
 
 export default serviceLoader;

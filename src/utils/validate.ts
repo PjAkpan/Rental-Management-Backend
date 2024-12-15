@@ -265,6 +265,13 @@ const updatemaintenanceInputValidation = (data: unknown) => {
   return schema.validate(data);
 };
 
+const addTenancyPaymentInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    userId: Joi.string().required(),
+  });
+  return schema.validate(data);
+};
+
 const addRentPaymentInputValidation = (data: unknown) => {
   const schema = Joi.object({
     roomNumber: Joi.string().required(),
@@ -343,4 +350,5 @@ export {
   updatemaintenanceInputValidation,
   addRentPaymentInputValidation,
   updateRentPaymentInputValidation,
+  addTenancyPaymentInputValidation,
 };
