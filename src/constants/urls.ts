@@ -39,4 +39,12 @@ export const urls = {
     viewSingleMaintenance: () => routeCreator("view/:id"),
     viewAllMaintenance: () => routeCreator("fetch/all"),
   },
+  RentPayment: {
+    check: () => routeCreator("check"),
+    createRentPayment: () => routeCreator("add", "post"),
+    deleteRentPayment: () => routeCreator("delete/:id", "delete"),
+    modifyRentPayment: () => routeCreator("update", "put"),
+    viewSingleRentPayment: () => routeCreator("view/:id"),
+    viewAllRentPayment: () => routeCreator("fetch/all"),
+  },
 };

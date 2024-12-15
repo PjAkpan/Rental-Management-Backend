@@ -20,6 +20,8 @@ import {
   resendOtpInputValidation,
   addmaintenanceInputValidation,
   updatemaintenanceInputValidation,
+  addRentPaymentInputValidation,
+  updateRentPaymentInputValidation,
 } from "../utils/validate";
 import { usersModel } from "../models";
 
@@ -176,6 +178,17 @@ const updateMaintenanceInputRequest = createValidationMiddleware(
   updatemaintenanceInputValidation,
   "body",
 );
+
+
+const validateCreateRentPaymentRequest = createValidationMiddleware(
+  addRentPaymentInputValidation,
+  "body"
+);
+
+const updateRentPaymentInputRequest = createValidationMiddleware(
+  updateRentPaymentInputValidation,
+  "body"
+);
 const verifyMiddleware = {
   checkIfUserIsVerified,
   validateLoginInput,
@@ -196,6 +209,8 @@ const verifyMiddleware = {
   updateOtpInputRequest,
   validateCreateMaintenanceRequest,
   updateMaintenanceInputRequest,
+  validateCreateRentPaymentRequest,
+  updateRentPaymentInputRequest,
 };
 
 export { verifyMiddleware };

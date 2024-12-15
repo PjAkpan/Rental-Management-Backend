@@ -78,3 +78,15 @@ export type maintenanceShemType = {
   isActive: boolean;
 } & Model &
   Helpers.Timestamps;
+
+export type RentPaymentShemType = {
+  id: string;
+  roomNumber: string;
+  paymentAmount: string;
+  userId: string;
+  pictureProof: string;
+  paymentDate: string;
+  nextRentDueDate?: string;
+  isActive?: boolean;
+} & Model &
+  Helpers.Timestamps;
