@@ -30,12 +30,34 @@ const addMaintenance: RequestHandler = async (req, res) => {
   const videoProof = files?.videoProof as fileUpload.UploadedFile | undefined;
 
   try {
+    // File validation settings
+    const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const maxFileSize = 5 * 1024 * 1024; // 5 MB
+
     let filePaths: string[] = [];
 
     // Upload files only if they are provided
     if (pictureProof || videoProof) {
       const filesToUpload = [];
-      if (pictureProof) filesToUpload.push(pictureProof);
+      if (pictureProof) {
+        if (!allowedFileTypes.includes(pictureProof.mimetype)) {
+          return responseObject({
+            res,
+            statusCode: HttpStatusCode.BadRequest,
+            message:
+              "Invalid file type. Only JPEG, JPG, PNG, and PDF are allowed.",
+          });
+        }
+        if (pictureProof.size > maxFileSize) {
+          return responseObject({
+            res,
+            statusCode: HttpStatusCode.BadRequest,
+            message: "File size exceeds the 5 MB limit.",
+          });
+        }
+        filesToUpload.push(pictureProof);
+      }
+
       if (videoProof) filesToUpload.push(videoProof);
 
       filePaths = await uploadFiles(userId, filesToUpload, "maintenance");

@@ -28,11 +28,35 @@ const addRentPayment: RequestHandler = async (req, res) => {
     | fileUpload.UploadedFile
     | undefined;
   try {
+    // File validation settings
+    const allowedFileTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "application/pdf",
+    ];
+    const maxFileSize = 5 * 1024 * 1024; // 5 MB
+
     let filePaths: string[] = [];
 
     // Upload files only if they are provided
     if (pictureProof) {
       const filesToUpload = [];
+      if (!allowedFileTypes.includes(pictureProof.mimetype)) {
+        return responseObject({
+          res,
+          statusCode: HttpStatusCode.BadRequest,
+          message:
+            "Invalid file type. Only JPEG, JPG, PNG, and PDF are allowed.",
+        });
+      }
+      if (pictureProof.size > maxFileSize) {
+        return responseObject({
+          res,
+          statusCode: HttpStatusCode.BadRequest,
+          message: "File size exceeds the 5 MB limit.",
+        });
+      }
       if (pictureProof) filesToUpload.push(pictureProof);
 
       filePaths = await uploadFiles(userId, filesToUpload, "rentPayment");
