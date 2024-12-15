@@ -47,5 +47,6 @@ export const urls = {
     modifyRentPayment: () => routeCreator("update", "put"),
     viewSingleRentPayment: () => routeCreator("view/:id"),
     viewAllRentPayment: () => routeCreator("fetch/all"),
+    viewAllTenancyPayment: () => routeCreator("fetch/all/tenancy"),
   },
 };

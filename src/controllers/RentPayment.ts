@@ -294,6 +294,49 @@ const addTenancyPayment: RequestHandler = async (req, res) => {
   }
 };
 
+const fetchAllTenancyPayments: RequestHandler = async (req, res) => {
+  const { orderBy = "createdAt", sort = "DESC", size, page } = req.query;
+  try {
+    const sizeNumber = parseInt(size as string) || 10;
+    const pageNumber = parseInt(page as string) || 1;
+    const filter: any = {
+      order: [[orderBy, sort]],
+      limit: sizeNumber,
+      offset: sizeNumber * (pageNumber - 1),
+    };
+    const response = await tenancyPaymentModel.findAll(filter);
+
+    if (!response.status) {
+      return responseObject({
+        res,
+        statusCode: response.statusCode,
+        message: response.message,
+        payload: response.payload,
+      });
+    }
+
+    const totalRecords = response.payload?.recordCount || 0;
+    const totalPages = Math.ceil(totalRecords / sizeNumber);
+    const payload = {
+      currentPage: pageNumber,
+      totalRecords,
+      totalPages,
+      data: response.payload?.allRecords,
+    };
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.OK,
+      message: "Successfully fetched all records",
+      payload,
+    });
+  } catch (err) {
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: errorHandler(err, null).message,
+    });
+  }
+};
 export {
   checkServiceHealth,
   addRentPayment,
@@ -302,4 +345,5 @@ export {
   fetchSingleInfo,
   fetchAllRentPayments,
   addTenancyPayment,
+  fetchAllTenancyPayments,
 };

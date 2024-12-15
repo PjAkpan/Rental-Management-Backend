@@ -52,6 +52,14 @@ const serviceLoader: RouteHandler[] = [
       controllers.RentPayment.fetchAllRentPayments,
     ],
   },
+  {
+    path: joinUrls([constants.urls.RentPayment.viewAllTenancyPayment().path]),
+    method: constants.urls.RentPayment.viewAllTenancyPayment().method,
+    handlers: [
+      verifyMiddleware.validateVeiwAllInput,
+      controllers.RentPayment.fetchAllTenancyPayments,
+    ],
+  },
 ];
 
 export default serviceLoader;
