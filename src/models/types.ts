@@ -90,3 +90,25 @@ export type RentPaymentShemType = {
   isActive?: boolean;
 } & Model &
   Helpers.Timestamps;
+import { Helpers } from "../types";
+import { Model } from "sequelize";
+
+export type accountDetailsShemType = {
+  Id?: string;
+  name: "ordinaryuser" | "backend" | "superadmin";
+  status: string;
+  isActive: boolean;
+} & Model & Helpers.Timestamps;
+
+export type FindInfoParams = {
+  orderBy?: string;
+  sort?: "ASC" | "DESC";
+  size?: number;
+  page?: number;
+  gSearch?: string;
+  filter?: Record<string, any>;
+  status?: string;
+  option?: string;
+  startDate?: string;
+  endDate?: string;
+};

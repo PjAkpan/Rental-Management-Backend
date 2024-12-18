@@ -51,6 +51,7 @@ const port = getters.getAppPort();
 
 // Middleware to capture response body
 app.use(captureInflowANDOutput);
+
 // Load routes with a service prefix
 const customWildcardHandler = (req: Request, res: Response) => {
   res.status(404).json({ message: "Custom Not Found" });

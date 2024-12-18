@@ -23,6 +23,8 @@ import {
   addRentPaymentInputValidation,
   updateRentPaymentInputValidation,
   addTenancyPaymentInputValidation,
+  addaccountDetailsInputValidation,
+  updateaccountDetailsInputValidation,
 } from "../utils/validate";
 import { usersModel } from "../models";
 
@@ -194,6 +196,17 @@ const validateCreateTenancyPaymentRequest = createValidationMiddleware(
   addTenancyPaymentInputValidation,
   "body",
 );
+
+
+const validateCreateAccountDetailsRequest = createValidationMiddleware(
+  addaccountDetailsInputValidation,
+  "body"
+);
+
+const updateAccountDetailsInputRequest = createValidationMiddleware(
+  updateaccountDetailsInputValidation,
+  "body"
+);
 const verifyMiddleware = {
   checkIfUserIsVerified,
   validateLoginInput,
@@ -217,6 +230,8 @@ const verifyMiddleware = {
   validateCreateRentPaymentRequest,
   updateRentPaymentInputRequest,
   validateCreateTenancyPaymentRequest,
+  validateCreateAccountDetailsRequest,
+  updateAccountDetailsInputRequest,
 };
 
 export { verifyMiddleware };
