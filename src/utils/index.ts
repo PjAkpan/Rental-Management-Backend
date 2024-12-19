@@ -16,3 +16,4 @@ export * from "./returnedObject";
 export * from "./loadRoutes";
 export * from "./CustomWinstonLogger";
 export * from "./fileUploadHelper";
+export * from "./sanitizeInput";

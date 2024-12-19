@@ -1,7 +1,6 @@
 import { DataTypes, Sequelize } from "sequelize";
 import { RentPaymentShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
-import { FindOptions } from "sequelize";
 import { RentPaymentFilePathModel } from "./rentPaymentFiles";
 
 const RentPaymentSchema = DBconnect.define(
@@ -120,7 +119,7 @@ export const findRentPayment = async (filter: Record<string, unknown>) => {
 };
 
 // Find all RentPayments
-export const findAll = async (filter: FindOptions) => {
+export const findAll = async (filter: any) => {
   try {
     const [allRecords, recordCount] = await Promise.all([
       RentPaymentModel.findAll({
