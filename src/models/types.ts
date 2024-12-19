@@ -90,3 +90,11 @@ export type RentPaymentShemType = {
   isActive?: boolean;
 } & Model &
   Helpers.Timestamps;
+
+export type accountDetailsShemType = {
+  Id?: string;
+  name: "ordinaryuser" | "backend" | "superadmin";
+  status: string;
+  isActive: boolean;
+} & Model &
+  Helpers.Timestamps;

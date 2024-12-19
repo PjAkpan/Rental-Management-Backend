@@ -330,6 +330,25 @@ const updateRentPaymentInputValidation = (data: unknown) => {
   return schema.validate(data);
 };
 
+const addaccountDetailsInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    bankName: Joi.string().required(),
+    accountNumber: Joi.string().required(),
+    accountName: Joi.string().required(),
+  });
+  return schema.validate(data);
+};
+const updateaccountDetailsInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
+    bankName: Joi.string().required(),
+    accountNumber: Joi.string().required(),
+    accountName: Joi.string().required(),
+    status: Joi.string().optional().allow(""),
+  });
+  return schema.validate(data);
+};
+
 export {
   validateSigninInput,
   sendOtpInputValidation,
@@ -351,4 +370,6 @@ export {
   addRentPaymentInputValidation,
   updateRentPaymentInputValidation,
   addTenancyPaymentInputValidation,
+  addaccountDetailsInputValidation,
+  updateaccountDetailsInputValidation,
 };

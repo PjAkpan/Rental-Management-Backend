@@ -55,7 +55,7 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.11.3",
     "netwrap": "^3.0.2",
-    "niggamomentrouter": "^1.0.4",
+    "niggamomentrouter": "^1.0.6",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.4",
     "normal-case-generator": "^1.0.1",
