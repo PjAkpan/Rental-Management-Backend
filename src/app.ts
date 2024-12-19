@@ -14,6 +14,7 @@ import path from "path";
 import requestIp from "request-ip";
 import fileUpload from "express-fileupload";
 import { joinTables } from "./models";
+const NODE_BUILD_ENV = process.env.NODE_BUILD_ENV || "development";
 
 const app = express();
 
@@ -57,7 +58,7 @@ const customWildcardHandler = (req: Request, res: Response) => {
   res.status(404).json({ message: "Custom Not Found" });
 };
 
-loadRoutes(routeFolder, app, "/api")
+loadRoutes(routeFolder, app, "/api", NODE_BUILD_ENV as string)
   .then(async () => {
     // Place wildcard route after all other routes
     app.use(customWildcardHandler);

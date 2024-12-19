@@ -11,11 +11,13 @@ export default async function loadRoutes(
   routeFolderName: string,
   app: Express,
   servicePrefix = "",
+  NODE_BUILD_ENV: string,
   wildcardHandler?: RequestHandler,
 ): Promise<void> {
   const startTime = Date.now();
-  const isDevelopment = process.env.NODE_BUILD_ENV === "development";
+  const isDevelopment = NODE_BUILD_ENV || "development";
   logger("Netwrap Log: Available Routes below");
+  logger(`Netwrap Log: current environment ${isDevelopment}`);
 
   try {
     const routeFiles = fs.readdirSync(routeFolderName);
