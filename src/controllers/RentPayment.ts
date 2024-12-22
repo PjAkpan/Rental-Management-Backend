@@ -76,6 +76,7 @@ const addRentPayment: RequestHandler = async (req, res) => {
       roomNumber,
       paymentDate,
       paymentAmount,
+      status: "pending",
     });
 
     // If files were uploaded, save file paths
@@ -133,7 +134,8 @@ const deleteRentPayment: RequestHandler = async (req, res) => {
 };
 
 const modifyRentPayment: RequestHandler = async (req, res) => {
-  const { requestId, roomNumber, paymentDate, paymentAmount } = req.body;
+  const { requestId, status, roomNumber, paymentDate, paymentAmount } =
+    req.body;
   let payload: any = {};
   try {
     const filter = { where: { id: requestId } };
@@ -150,10 +152,19 @@ const modifyRentPayment: RequestHandler = async (req, res) => {
     addIfNotEmpty(payload, "roomNumber", roomNumber);
     addIfNotEmpty(payload, "paymentAmount", paymentAmount);
     addIfNotEmpty(payload, "paymentDate", paymentDate);
+    addIfNotEmpty(payload, "status", status);
+    if (status == "active") {
+      await RentPaymentModel.updateRentPaymentAll({
+        isActive: false,
+      });
+
+      payload.isActive = true;
+    }
     const updatedRentPayment = await RentPaymentModel.updateRentPaymentById(
       requestId,
       payload,
     );
+
     return responseObject({
       res,
       statusCode: updatedRentPayment.statusCode,
@@ -204,7 +215,8 @@ const fetchAllRentPayments: RequestHandler = async (req, res) => {
   let payload = null;
   const columnMapping: any = {
     USERID: "userId",
-    STATUS: "isActive",
+    STATUS: "status",
+    ISACTIVE: "isActive",
     // Add any additional mappings as necessary
   };
   try {
@@ -224,7 +236,7 @@ const fetchAllRentPayments: RequestHandler = async (req, res) => {
       limit: sizeNumber,
       offset: sizeNumber * (pageNumber - 1),
       attributes: {
-        exclude: ["updatedAt", "id"], // Specify the columns to exclude
+        exclude: ["updatedAt"], // Specify the columns to exclude
       },
       where: {}, // Initialize as an object with dynamic keys
     };
