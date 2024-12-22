@@ -302,10 +302,11 @@ const loginUsers: RequestHandler = async (req, res) => {
       throw createHttpError("User not found", HttpStatusCode.NotFound);
     }
 
-    const checkPassword = bcrypt.compare(
+    const checkPassword = await bcrypt.compare(
       password,
       loginUserService.payload.password,
     );
+
     if (!checkPassword) {
       throw createHttpError("Invalid login details", HttpStatusCode.NotFound);
     }
