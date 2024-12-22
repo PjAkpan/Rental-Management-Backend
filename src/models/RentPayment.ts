@@ -32,10 +32,14 @@ const RentPaymentSchema = DBconnect.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      defaultValue: true,
+      defaultValue: false,
     },
   },
   {
@@ -188,6 +192,52 @@ export const findRentPaymentById = async (id: string) => {
       status: false,
       statusCode: HttpStatusCode.InternalServerError,
       message: (err as Error).message || "Error finding RentPayment",
+      payload: null,
+    };
+  }
+};
+
+export const updateRentPaymentAll = async (
+  updateData: Partial<RentPaymentShemType>,
+  id?: number, // Optional parameter for id
+) => {
+  try {
+    const updateOptions: any = {
+      where: {},
+      returning: true, // To return the updated records
+    };
+
+    // Add the where clause only if id is provided
+    if (id !== undefined) {
+      updateOptions.where = { id };
+    }
+
+    const [rowsUpdated, updatedRentPayments] = await RentPaymentModel.update(
+      updateData,
+      updateOptions,
+    );
+
+    if (rowsUpdated === 0) {
+      return {
+        status: false,
+        statusCode: HttpStatusCode.NotFound,
+        message: "No RentPayment records found to update",
+        payload: null,
+      };
+    }
+
+    return {
+      status: true,
+      statusCode: HttpStatusCode.OK,
+      message: "RentPayment updated successfully",
+      payload: updatedRentPayments,
+    };
+  } catch (err) {
+    console.error("Error updating RentPayment:", err);
+    return {
+      status: false,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: (err as Error).message || "Error updating RentPayment",
       payload: null,
     };
   }

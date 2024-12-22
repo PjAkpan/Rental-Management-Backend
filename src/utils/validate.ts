@@ -129,8 +129,8 @@ const ValidateviewAllValidation = (data: unknown) => {
     sort: Joi.string().optional().allow("").valid("ASC", "DESC"),
     size: Joi.string().optional().allow(""),
     page: Joi.string().optional().allow(""),
-    gSearch: Joi.string().optional().allow(""),
-    option: Joi.string().optional().allow(""),
+    gSearch: Joi.any().optional().allow(""),
+    option: Joi.any().optional().allow(""),
     requestType: Joi.string()
       .optional()
       .allow("")
@@ -304,7 +304,11 @@ const updateRentPaymentInputValidation = (data: unknown) => {
   const schema = Joi.object({
     requestId: Joi.string().required(),
     roomNumber: Joi.string().optional().allow(""),
-    userId: Joi.string().required(),
+    status: Joi.string()
+      .optional()
+      .allow("")
+      .valid("pending", "active", "due", "suspended"),
+    userId: Joi.string().optional().allow(""),
     paymentAmount: Joi.string().optional().allow(""),
     // pictureProof: Joi.string().optional().allow(""),
     paymentDate: Joi.alternatives()
