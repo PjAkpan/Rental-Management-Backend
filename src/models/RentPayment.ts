@@ -133,7 +133,7 @@ export const findAll = async (filter: any) => {
             model: RentPaymentFilePathModel,
             as: "repaymentFiles", // Alias if needed
             on: Sequelize.literal(
-              "\"tblRentPayment\".\"id\" = \"repaymentFiles\".\"requestId\"::uuid",
+              '"tblRentPayment"."id" = "repaymentFiles"."requestId"::uuid',
             ),
           },
         ],
@@ -307,6 +307,35 @@ export const deleteRentPaymentById = async (id: string) => {
       status: false,
       statusCode: HttpStatusCode.InternalServerError,
       message: (err as Error).message || "Error deleting RentPayment",
+      payload: null,
+    };
+  }
+};
+
+export const findSingle = async (filter: Record<string, unknown>) => {
+  try {
+    filter.raw = true;
+    const RentPayment = await RentPaymentModel.findOne(filter);
+    if (!RentPayment) {
+      return {
+        status: false,
+        statusCode: HttpStatusCode.NotFound,
+        message: "RentPayment not found",
+        payload: null,
+      };
+    }
+    return {
+      status: true,
+      statusCode: HttpStatusCode.OK,
+      message: "RentPayment found",
+      payload: RentPayment,
+    };
+  } catch (err) {
+    console.error("Error finding RentPayment:", err);
+    return {
+      status: false,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: (err as Error).message || "Error finding RentPayment",
       payload: null,
     };
   }

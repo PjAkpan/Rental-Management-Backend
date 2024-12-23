@@ -25,6 +25,7 @@ import {
   addTenancyPaymentInputValidation,
   addaccountDetailsInputValidation,
   updateaccountDetailsInputValidation,
+  generateReceiptInputValidation,
 } from "../utils/validate";
 import { usersModel } from "../models";
 
@@ -197,16 +198,21 @@ const validateCreateTenancyPaymentRequest = createValidationMiddleware(
   "body",
 );
 
-
 const validateCreateAccountDetailsRequest = createValidationMiddleware(
   addaccountDetailsInputValidation,
-  "body"
+  "body",
 );
 
 const updateAccountDetailsInputRequest = createValidationMiddleware(
   updateaccountDetailsInputValidation,
-  "body"
+  "body",
 );
+
+const validateGenerateReceiptInput = createValidationMiddleware(
+  generateReceiptInputValidation,
+  "body",
+);
+
 const verifyMiddleware = {
   checkIfUserIsVerified,
   validateLoginInput,
@@ -232,6 +238,7 @@ const verifyMiddleware = {
   validateCreateTenancyPaymentRequest,
   validateCreateAccountDetailsRequest,
   updateAccountDetailsInputRequest,
+  validateGenerateReceiptInput,
 };
 
 export { verifyMiddleware };

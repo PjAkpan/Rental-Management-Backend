@@ -294,7 +294,7 @@ const addRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
+          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
       }),
   });
   return schema.validate(data);
@@ -328,7 +328,7 @@ const updateRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
+          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
       }),
   });
   return schema.validate(data);
@@ -349,6 +349,13 @@ const updateaccountDetailsInputValidation = (data: unknown) => {
     accountNumber: Joi.string().required(),
     accountName: Joi.string().required(),
     status: Joi.string().optional().allow(""),
+  });
+  return schema.validate(data);
+};
+
+const generateReceiptInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
   });
   return schema.validate(data);
 };
@@ -376,4 +383,5 @@ export {
   addTenancyPaymentInputValidation,
   addaccountDetailsInputValidation,
   updateaccountDetailsInputValidation,
+  generateReceiptInputValidation,
 };
