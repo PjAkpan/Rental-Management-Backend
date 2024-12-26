@@ -4,6 +4,7 @@ import * as billsController from  "./bills";
 import * as maintenanceController from "./maintenance";
 import * as otpController from "./otp";
 import * as resourcesController from "./resources";
+import * as roomsController from "./rooms";
 import * as usersController from "./users";
 import healthControllers from "./health";
 
@@ -15,5 +16,6 @@ export default {
   maintenance: maintenanceController,
   otp: otpController,
   resources: resourcesController,
+  rooms: roomsController,
   users: usersController
 };

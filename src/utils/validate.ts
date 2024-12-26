@@ -294,7 +294,7 @@ const addRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
+          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
       }),
   });
   return schema.validate(data);
@@ -328,7 +328,7 @@ const updateRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
+          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
       }),
   });
   return schema.validate(data);
@@ -360,6 +360,21 @@ const generateReceiptInputValidation = (data: unknown) => {
   return schema.validate(data);
 };
 
+const addroomsInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    roomNumber: Joi.string().required(),
+  });
+  return schema.validate(data);
+};
+const updateroomsInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
+    roomNumber: Joi.string().required(),
+    roomStatus: Joi.string().required().valid("available", "occupied"),
+  });
+  return schema.validate(data);
+};
+
 export {
   validateSigninInput,
   sendOtpInputValidation,
@@ -384,4 +399,6 @@ export {
   addaccountDetailsInputValidation,
   updateaccountDetailsInputValidation,
   generateReceiptInputValidation,
+  addroomsInputValidation,
+  updateroomsInputValidation,
 };

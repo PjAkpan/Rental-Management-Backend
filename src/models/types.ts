@@ -98,3 +98,11 @@ export type accountDetailsShemType = {
   isActive: boolean;
 } & Model &
   Helpers.Timestamps;
+
+export type roomsShemType = {
+  id?: string;
+  roomStatus: "available" | "occupied" | "taken" | "empty";
+  roomNumber: string;
+  isActive: boolean;
+} & Model &
+  Helpers.Timestamps;
