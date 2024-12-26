@@ -58,7 +58,7 @@ const addUsers: RequestHandler = async (req, res) => {
     if (!Array.isArray(role)) {
       role = [role];
     }
-    const defaultRoles = ["customer", "admin"];
+    const defaultRoles = ["customer"];
     const mergedRoles = Array.from(new Set([...defaultRoles, ...role]));
     role = mergedRoles.join(",");
 

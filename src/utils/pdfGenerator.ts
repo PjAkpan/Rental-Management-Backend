@@ -43,44 +43,96 @@ export const generateRentReceiptPDF = async (
 
 const getRentReceiptTemplate = (payload: any): string => {
   return `
-    <html>
-    <head>
-      <meta charset="utf-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-      <title>Rent Receipt</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <style>
-        body {
-          font-size: 14px;
-          font-family: Arial, sans-serif;
-          color: black;
-        }
-        h1 {
-          text-align: center;
-        }
-        .content {
-          margin: 20px;
-        }
-        .details {
-          margin-top: 20px;
-        }
-      </style>
-    </head>
-    <body>
-      <h1>RENT RECEIPT</h1>
-      <div class="content">
-        <p>Date: ${new Date().toLocaleDateString()}</p>
-        <div class="details">
-          <p>Received a sum of ₦${payload.paymentAmount} (in words: ${convertNumberToWords(payload.paymentAmount)}) from</p>
-          <p>User ID: ${payload.userId}</p>
-          <p>Room Number: ${payload.roomNumber}</p>
-          <p>Towards rent for the period starting ${new Date(payload.paymentDate).toLocaleDateString()} to ${new Date(payload.nextRentDueDate).toLocaleDateString()}</p>
-          <p>For residential/commercial building located at: [Enter Address Here]</p>
-        </div>
-        <p style="text-align: right;">Name & Signature of Landlord:</p>
-      </div>
-    </body>
-    </html>`;
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rent Receipt</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 24px;
+      text-align: center;
+      margin: 0 0 20px;
+      color: #444;
+    }
+    .date {
+      text-align: right;
+      font-weight: bold;
+    }
+    .details {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+    }
+    .details p {
+      margin: 8px 0;
+    }
+    .signature {
+      margin-top: 30px;
+      text-align: right;
+      font-style: italic;
+    }
+    .highlight {
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Rent Receipt</h1>
+    <p class="date">Date: ${new Date().toLocaleDateString()}</p>
+    <div class="details">
+      <p>
+        This is to acknowledge receipt of the sum of 
+        <span class="highlight">₦${payload.paymentAmount}</span> 
+        (<span class="highlight">${convertNumberToWords(payload.paymentAmount)}</span>) 
+        from the tenant.
+      </p>
+      <p>
+        <strong>User ID:</strong> ${payload.userId}
+      </p>
+      <p>
+        <strong>Room Number:</strong> ${payload.roomNumber}
+      </p>
+      <p>
+        This payment is towards rent for the period starting 
+        <span class="highlight">${new Date(payload.paymentDate).toLocaleDateString()}</span> 
+        to 
+        <span class="highlight">${new Date(payload.nextRentDueDate).toLocaleDateString()}</span>.
+      </p>
+      <p>
+        The property is located at: 
+        <span class="highlight">[Enter Address Here]</span>.
+      </p>
+    </div>
+    <p class="signature">
+      Name & Signature of Landlord:
+    </p>
+  </div>
+</body>
+</html>`;
 };
 
 // Helper to convert numbers to words
