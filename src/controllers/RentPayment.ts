@@ -8,6 +8,8 @@ import {
   sanitizeInput,
   uploadFiles,
 } from "../utils";
+import path from "path";
+import fs from "fs/promises";
 import type { RequestHandler } from "express";
 import {
   RentPaymentFileModel,
@@ -433,7 +435,7 @@ const fetchAllTenancyPayments: RequestHandler = async (req, res) => {
 };
 
 const generateTenancyPaymentsReceipt: RequestHandler = async (req, res) => {
-  const { requestId } = req.body;
+  const { requestId } = req.params;
   try {
     let filter = {
       where: { id: requestId },
@@ -450,13 +452,36 @@ const generateTenancyPaymentsReceipt: RequestHandler = async (req, res) => {
     }
 
     const payload = response.payload;
-    await generateRentReceiptPDF(payload, res);
-    return responseObject({
-      res,
-      statusCode: HttpStatusCode.OK,
-      message: "Successfully fetched all records",
-      payload,
+    const pdfFilePath = path.join(
+      __dirname,
+      `../uploads/Rent_Receipt_${payload?.id}.pdf`,
+    );
+    const customerRecipet = await generateRentReceiptPDF(payload, pdfFilePath);
+    // Send the file for download
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=Rent_Receipt_${payload?.id}.pdf`,
+    );
+    res.download(pdfFilePath, async (err) => {
+      if (err) {
+        console.error("Error while sending the file:", err);
+        return responseObject({
+          res,
+          statusCode: HttpStatusCode.InternalServerError,
+          message: "Failed to download the file.",
+        });
+      }
+
+      // Clean up the file after sending
+      await fs.unlink(pdfFilePath);
     });
+    // return responseObject({
+    //   res,
+    //   statusCode: HttpStatusCode.OK,
+    //   message: "Successfully fetched all records",
+    //   payload,
+    // });
   } catch (err) {
     return responseObject({
       res,

@@ -4,6 +4,7 @@ import { RentPaymentModel } from "./RentPayment";
 import { RentPaymentFilePathModel } from "./rentPaymentFiles";
 import { TenancyPaymentFilesPathModel } from "./tenancyPaymentFiles";
 import { UserProfileModel } from "./userProfile";
+import { UsersModel } from "./users";
 
 export const setupAssociations = async () => {
   MaintenanceModel.hasMany(MaintenanceFilePathModel, {
@@ -36,5 +37,10 @@ export const setupAssociations = async () => {
     as: "userInfo",
     foreignKey: "userId", // Maintenance record's ID is linked to requestId in the file path
     targetKey: "profileId", // Link on the 'id' of the Maintenance model
+  });
+  UsersModel.belongsTo(UserProfileModel, {
+    as: "userInfo",
+    foreignKey: "id", // Link to requestId in the MaintenanceFilePath table
+    targetKey: "profileId", // Link to the id of the Maintenance model});
   });
 };

@@ -48,7 +48,7 @@ export const urls = {
     viewSingleRentPayment: () => routeCreator("view/:id"),
     viewAllRentPayment: () => routeCreator("fetch/all"),
     viewAllTenancyPayment: () => routeCreator("fetch/all/tenancy"),
-    generateReceipt: () => routeCreator("generate/receipt", "post"),
+    generateReceipt: () => routeCreator("generate/receipt/:requestId", "get"),
   },
   accountDetails: {
     check: () => routeCreator("check"),
@@ -57,5 +57,13 @@ export const urls = {
     modifyAccountDetails: () => routeCreator("update", "put"),
     viewSingleAccountDetails: () => routeCreator("view/:id"),
     viewAllAccountDetails: () => routeCreator("fetch/all"),
+  },
+rooms: {
+    check: () => routeCreator("check"),
+    createRooms: () => routeCreator("add", "post"),
+    deleteRooms: () => routeCreator("delete/:id", "delete"),
+    modifyRooms: () => routeCreator("update", "put"),
+    viewSingleRooms: () => routeCreator("view/:id"),
+    viewAllRooms: () => routeCreator("fetch/all"),
   },
 };

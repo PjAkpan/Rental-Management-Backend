@@ -1,48 +1,39 @@
 import pdf from "html-pdf";
 import fs from "fs";
-import path from "path";
-import { Response } from "express";
+import { promisify } from "util";
 
 const convertNumberToWords = (amount: string): string => {
   const converter = require("number-to-words");
   return converter.toWords(amount);
 };
 
+const createPDF = promisify(pdf.create);
+
 export const generateRentReceiptPDF = async (
   payload: any,
-  res: Response,
+  filePath: string,
 ): Promise<void> => {
-  const filePath = path.join(
-    __dirname,
-    `../uploads/Rent_Receipt_${payload.id}.pdf`,
-  );
-
   const html = getRentReceiptTemplate(payload);
-
   const options: any = {
     format: "A4",
     border: "10mm",
   };
 
-  pdf.create(html, options).toFile(filePath, (err: any, result: any) => {
-    if (err) {
-      console.error("Error generating PDF:", err);
-      res.status(500).send("Error generating PDF");
-      return;
-    }
-
-    res.download(result.filename, `Rent_Receipt_${payload.id}.pdf`, (err) => {
+  return new Promise((resolve, reject) => {
+    pdf.create(html, options).toFile(filePath, (err: any) => {
       if (err) {
-        res.status(500).send("Error in sending file");
+        console.error("Error generating PDF:", err);
+        reject(err);
+      } else {
+        resolve();
       }
-      fs.unlinkSync(result.filename); // Cleanup the file
     });
   });
 };
 
 const getRentReceiptTemplate = (payload: any): string => {
   return `
-   <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -66,6 +57,29 @@ const getRentReceiptTemplate = (payload: any): string => {
       padding: 20px;
       background-color: #f9f9f9;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .receipt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .logo {
+      max-width: 80px;
+      max-height: 80px;
+    }
+    .header-details {
+      text-align: right;
+    }
+    .header-details h1 {
+      font-size: 20px;
+      margin: 0 0 8px;
+      color: #333;
+    }
+    .header-details p {
+      margin: 4px 0;
+      font-size: 12px;
+      color: #555;
     }
     h1 {
       font-size: 24px;
@@ -100,6 +114,14 @@ const getRentReceiptTemplate = (payload: any): string => {
 </head>
 <body>
   <div class="container">
+    <header class="receipt-header">
+      <img src="your-logo.png" alt="Hostel Logo" class="logo" />
+      <div class="header-details">
+        <h1>IKOT AKPADEN HOSTEL</h1>
+        <p>Address: Ikot Akpaden, Akwa Ibom, Nigeria</p>
+        <p>Phone: +234-123-456-7890 | Email: info@ikotakpadenhostel.com</p>
+      </div>
+    </header>
     <h1>Rent Receipt</h1>
     <p class="date">Date: ${new Date().toLocaleDateString()}</p>
     <div class="details">
@@ -131,7 +153,8 @@ const getRentReceiptTemplate = (payload: any): string => {
     </p>
   </div>
 </body>
-</html>`;
+</html>
+`;
 };
 
 // Helper to convert numbers to words

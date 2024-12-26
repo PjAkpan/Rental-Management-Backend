@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { DataTypes } from "sequelize";
+import { DataTypes, Sequelize } from "sequelize";
 import { usersShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
 import { logger } from "netwrap";
+import { UserProfileModel } from "./userProfile";
 
 const UsersSchema = DBconnect.define(
   "tblUsers",
@@ -121,7 +122,27 @@ export const findUsers = async (filter: Record<string, unknown>) => {
 export const findAll = async (filter: any) => {
   try {
     const [allRecords, recordCount] = await Promise.all([
-      UsersModel.findAll(filter),
+      UsersModel.findAll({
+        ...filter,
+        attributes: { exclude: ["deviceId", "password", "activeSession"] },
+        include: [
+          {
+            model: UserProfileModel,
+            as: "userInfo",
+            attributes: [
+              "profileId",
+              "roomNumber",
+              "profileImage",
+              "email",
+              "fullName",
+              "phoneNumber",
+            ],
+            on: Sequelize.literal(
+              '"tblUsers"."id" = "userInfo"."profileId"::uuid',
+            ),
+          },
+        ],
+      }),
       UsersModel.count({
         where: filter.where,
       }),
@@ -145,7 +166,7 @@ export const findAll = async (filter: any) => {
     return {
       status: false,
       statusCode: HttpStatusCode.InternalServerError,
-      message: "Error retrieving Userss",
+      message: `Error retrieving Users ${(err as Error).message}`,
       error: (err as Error).message || "Error retrieving Userss",
     };
   }
