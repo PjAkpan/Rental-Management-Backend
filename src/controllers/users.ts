@@ -235,6 +235,11 @@ const fetchAllUserss: RequestHandler = async (req, res) => {
     const sizeNumber = parseInt(size as string) || 10;
     const pageNumber = parseInt(page as string) || 1;
     const filter = {
+      where: {
+        role: {
+          [Op.eq]: "customer", // Matches the exact string "customer"
+        },
+      },
       order: [[orderBy, sort]],
       limit: sizeNumber,
       offset: sizeNumber * (pageNumber - 1),
