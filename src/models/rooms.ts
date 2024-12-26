@@ -1,7 +1,6 @@
 import { DataTypes } from "sequelize";
 import { roomsShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
-import { FindOptions } from "sequelize";
 
 const RoomsSchema = DBconnect.define(
   "tblRooms",

@@ -26,7 +26,7 @@ import {
   addaccountDetailsInputValidation,
   updateaccountDetailsInputValidation,
   generateReceiptInputValidation,
-addroomsInputValidation,
+  addroomsInputValidation,
   updateroomsInputValidation,
 } from "../utils/validate";
 import { usersModel } from "../models";
@@ -252,7 +252,7 @@ const verifyMiddleware = {
   validateCreateAccountDetailsRequest,
   updateAccountDetailsInputRequest,
   validateGenerateReceiptInput,
-validateCreateRoomsRequest,
+  validateCreateRoomsRequest,
   updateRoomsInputRequest,
 };
 

@@ -456,7 +456,7 @@ const generateTenancyPaymentsReceipt: RequestHandler = async (req, res) => {
       __dirname,
       `../uploads/Rent_Receipt_${payload?.id}.pdf`,
     );
-    const customerRecipet = await generateRentReceiptPDF(payload, pdfFilePath);
+    await generateRentReceiptPDF(payload, pdfFilePath);
     // Send the file for download
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(

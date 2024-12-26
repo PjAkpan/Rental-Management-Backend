@@ -58,7 +58,7 @@ export const urls = {
     viewSingleAccountDetails: () => routeCreator("view/:id"),
     viewAllAccountDetails: () => routeCreator("fetch/all"),
   },
-rooms: {
+  rooms: {
     check: () => routeCreator("check"),
     createRooms: () => routeCreator("add", "post"),
     deleteRooms: () => routeCreator("delete/:id", "delete"),

@@ -138,7 +138,7 @@ export const findAll = async (filter: any) => {
               "phoneNumber",
             ],
             on: Sequelize.literal(
-              '"tblUsers"."id" = "userInfo"."profileId"::uuid',
+              "\"tblUsers\".\"id\" = \"userInfo\".\"profileId\"::uuid",
             ),
           },
         ],
