@@ -100,32 +100,120 @@ const fetchSingleInfo: RequestHandler = async (req, res) => {
 };
 
 const fetchAll${capitalizedServiceName}s: RequestHandler = async (req, res) => {
-  const { orderBy = "createdAt", sort = "DESC", size, page } = req.query;
+  const {
+    orderBy = "createdAt",
+    sort = "DESC",
+    size,
+    page,
+    startDate,
+    endDate,
+  }: FindInfoParams = req.query;
+  let { gSearch, option }: any = req.query;
+  let statusCode = 503;
+  let message =
+    "A critical error occurred. Kindly contact admin for details about a possible solution to this error";
+  let payload = null;
+  const columnMapping: any = {
+    STATUS: "roomStatus",
+    ROOMNUMBER: "roomNumber",
+  };
   try {
-    const sizeNumber = parseInt(size as string) || 10;
-    const pageNumber = parseInt(page as string) || 1;
-    const filter:any = {
+   
+    const sizeNumber = size ? parseInt(size as unknown as string) : 10;
+    const pageNumber = page ? parseInt(page as unknown as string) : 1;
+    const filter: {
+      order: string[][];
+      limit: number;
+      offset: number;
+      attributes: {
+        exclude: string[];
+      };
+      where: Record<string, any>;
+    } = {
       order: [[orderBy, sort]],
       limit: sizeNumber,
       offset: sizeNumber * (pageNumber - 1),
+      attributes: {
+        exclude: ["updatedAt"], 
+      },
+      where: {},
     };
-    const response = await ${serviceName}Model.findAll(filter);
 
+    
+    gSearch = Array.isArray(gSearch) ? gSearch : [gSearch];
+    option = Array.isArray(option) ? option : [option];
+
+   
+    gSearch.forEach((searchValue: any, index: string | number) => {
+      const opt = option[index] || option[0]; 
+      const sanitizedSearchValue = searchValue;
+      const sanitizedOption: any = sanitizeInput(opt || "");
+
+     
+      const columnName = columnMapping[sanitizedOption.toUpperCase()];
+
+      
+      const exactMatchColumns = ["isActive", "roomNumber"];
+
+    
+      if (sanitizedSearchValue && sanitizedOption) {
+        if (columnName) {
+          
+          if (exactMatchColumns.includes(columnName)) {
+            filter.where[columnName] = { [Op.eq]: sanitizedSearchValue };
+          } else {
+            filter.where[columnName] = {
+              [Op.like]: '%{sanitizedSearchValue}%',
+            };
+          }
+        } else {
+        
+          throw createHttpError("Invalid search option provided", 404);
+        }
+      }
+    });
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      filter.where.createdAt = {
+        [Op.between]: [start, end],
+      };
+    }
+    logger(filter);
+    const response = await ${serviceName}.findAll(filter);
+    message = response.message;
+    payload = response.payload;
+    statusCode = response.statusCode;
     if (!response.status) {
-      return responseObject({ res, statusCode: response.statusCode, message: response.message, payload: response.payload });
+      return responseObject({
+        res,
+        statusCode,
+        message,
+        payload,
+      });
     }
 
     const totalRecords = response.payload?.recordCount || 0;
     const totalPages = Math.ceil(totalRecords / sizeNumber);
-    const payload = {
+    payload = {
       currentPage: pageNumber,
       totalRecords,
       totalPages,
       data: response.payload?.allRecords,
     };
-    return responseObject({ res, statusCode: HttpStatusCode.OK, message: "Successfully fetched all records", payload });
+    message = "Successfully fetched all records";
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.OK,
+      message,
+      payload,
+    });
   } catch (err) {
-    return responseObject({ res, statusCode: HttpStatusCode.InternalServerError, message: errorHandler(err, null).message });
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: errorHandler(err, null).message,
+    });
   }
 };
 
