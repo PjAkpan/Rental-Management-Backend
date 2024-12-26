@@ -1,8 +1,7 @@
-import PDFDocument from "pdfkit";
 import pdf from "html-pdf";
 import fs from "fs";
 import path from "path";
-import { Request, Response } from "express";
+import { Response } from "express";
 
 const convertNumberToWords = (amount: string): string => {
   const converter = require("number-to-words");

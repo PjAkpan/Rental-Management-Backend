@@ -11,6 +11,11 @@ export const setupAssociations = async () => {
     foreignKey: "requestId", // Link to requestId in the MaintenanceFilePath table
     sourceKey: "id", // Link to the id of the Maintenance model});
   });
+  MaintenanceModel.belongsTo(UserProfileModel, {
+    as: "userInfo",
+    foreignKey: "userId", // Link to requestId in the MaintenanceFilePath table
+    targetKey: "profileId", // Link to the id of the Maintenance model});
+  });
   MaintenanceFilePathModel.belongsTo(MaintenanceModel, {
     as: "maintenance",
     foreignKey: "requestId", // Maintenance record's ID is linked to requestId in the file path

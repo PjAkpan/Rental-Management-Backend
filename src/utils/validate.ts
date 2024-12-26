@@ -294,7 +294,7 @@ const addRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
+          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
       }),
   });
   return schema.validate(data);
@@ -328,7 +328,7 @@ const updateRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
+          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
       }),
   });
   return schema.validate(data);
