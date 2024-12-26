@@ -10,17 +10,17 @@ const serviceLoader: RouteHandler[] = [
     method: constants.urls.rooms.check().method,
     handlers: [controllers.rooms.checkServiceHealth],
   },
-   {
+  {
     path: joinUrls([constants.urls.rooms.createRooms().path]),
     method: constants.urls.rooms.createRooms().method,
     handlers: [verifyMiddleware.validateCreateRoomsRequest, controllers.rooms.addRooms],
   },
-   {
+  {
     path: joinUrls([constants.urls.rooms.deleteRooms().path]),
     method: constants.urls.rooms.deleteRooms().method,
     handlers: [controllers.rooms.deleteRooms],
   },
-   {
+  {
     path: joinUrls([constants.urls.rooms.modifyRooms().path]),
     method: constants.urls.rooms.modifyRooms().method,
     handlers: [

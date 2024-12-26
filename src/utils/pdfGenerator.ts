@@ -1,13 +1,9 @@
 import pdf from "html-pdf";
-import fs from "fs";
-import { promisify } from "util";
 
 const convertNumberToWords = (amount: string): string => {
   const converter = require("number-to-words");
   return converter.toWords(amount);
 };
-
-const createPDF = promisify(pdf.create);
 
 export const generateRentReceiptPDF = async (
   payload: any,
