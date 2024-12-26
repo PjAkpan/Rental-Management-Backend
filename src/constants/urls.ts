@@ -48,7 +48,7 @@ export const urls = {
     viewSingleRentPayment: () => routeCreator("view/:id"),
     viewAllRentPayment: () => routeCreator("fetch/all"),
     viewAllTenancyPayment: () => routeCreator("fetch/all/tenancy"),
-    generateReceipt: () => routeCreator("generate/receipt", "post"),
+    generateReceipt: () => routeCreator("generate/receipt/:requestId", "get"),
   },
   accountDetails: {
     check: () => routeCreator("check"),

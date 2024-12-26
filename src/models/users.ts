@@ -121,10 +121,6 @@ export const findUsers = async (filter: Record<string, unknown>) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const findAll = async (filter: any) => {
   try {
-    console.log(filter);
-    console.log("filter.where:", filter.where);
-    console.log("filter.order:", filter.order);
-
     const [allRecords, recordCount] = await Promise.all([
       UsersModel.findAll({
         ...filter,
