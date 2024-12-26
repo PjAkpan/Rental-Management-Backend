@@ -353,6 +353,13 @@ const updateaccountDetailsInputValidation = (data: unknown) => {
   return schema.validate(data);
 };
 
+const generateReceiptInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
+  });
+  return schema.validate(data);
+};
+
 export {
   validateSigninInput,
   sendOtpInputValidation,
@@ -376,4 +383,5 @@ export {
   addTenancyPaymentInputValidation,
   addaccountDetailsInputValidation,
   updateaccountDetailsInputValidation,
+  generateReceiptInputValidation,
 };

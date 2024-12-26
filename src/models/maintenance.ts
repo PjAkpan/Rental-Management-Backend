@@ -3,6 +3,7 @@ import { maintenanceShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
 import { FindOptions } from "sequelize";
 import { MaintenanceFilePathModel } from "./maintenanceFiles";
+import { UserProfileModel } from "./userProfile";
 
 const MaintenanceSchema = DBconnect.define(
   "tblMaintenance",
@@ -107,6 +108,17 @@ export const findAll = async (filter: FindOptions) => {
       MaintenanceModel.findAll({
         ...filter,
         include: [
+          {
+            model: UserProfileModel,
+            as: "userInfo",
+            attributes: [
+              "roomNumber",
+              "profileImage",
+              "email",
+              "fullName",
+              "phoneNumber",
+            ],
+          },
           {
             model: MaintenanceFilePathModel,
             as: "files", // Alias if needed

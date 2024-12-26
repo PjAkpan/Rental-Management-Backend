@@ -17,3 +17,4 @@ export * from "./loadRoutes";
 export * from "./CustomWinstonLogger";
 export * from "./fileUploadHelper";
 export * from "./sanitizeInput";
+export * from "./pdfGenerator";

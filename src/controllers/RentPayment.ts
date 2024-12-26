@@ -3,6 +3,7 @@ import {
   addIfNotEmpty,
   createHttpError,
   errorHandler,
+  generateRentReceiptPDF,
   responseObject,
   sanitizeInput,
   uploadFiles,
@@ -430,6 +431,41 @@ const fetchAllTenancyPayments: RequestHandler = async (req, res) => {
     });
   }
 };
+
+const generateTenancyPaymentsReceipt: RequestHandler = async (req, res) => {
+  const { requestId } = req.body;
+  try {
+    let filter = {
+      where: { id: requestId },
+    };
+    const response = await RentPaymentModel.findSingle(filter);
+
+    if (!response.status) {
+      return responseObject({
+        res,
+        statusCode: response.statusCode,
+        message: response.message,
+        payload: response.payload,
+      });
+    }
+
+    const payload = response.payload;
+    await generateRentReceiptPDF(payload, res);
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.OK,
+      message: "Successfully fetched all records",
+      payload,
+    });
+  } catch (err) {
+    return responseObject({
+      res,
+      statusCode: HttpStatusCode.InternalServerError,
+      message: errorHandler(err, null).message,
+    });
+  }
+};
+
 export {
   checkServiceHealth,
   addRentPayment,
@@ -439,4 +475,5 @@ export {
   fetchAllRentPayments,
   addTenancyPayment,
   fetchAllTenancyPayments,
+  generateTenancyPaymentsReceipt,
 };
