@@ -451,11 +451,13 @@ const generateTenancyPaymentsReceipt: RequestHandler = async (req, res) => {
       });
     }
 
-    const payload = response.payload;
+    const payload: any = response.payload;
     const pdfFilePath = path.join(
       __dirname,
       `../uploads/Rent_Receipt_${payload?.id}.pdf`,
     );
+    payload.tenantName = payload["userData.fullName"];
+
     await generateRentReceiptPDF(payload, pdfFilePath);
     // Send the file for download
     res.setHeader("Content-Type", "application/pdf");

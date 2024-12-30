@@ -88,6 +88,7 @@ export type RentPaymentShemType = {
   paymentDate: string;
   nextRentDueDate?: string;
   isActive?: boolean;
+  tenantName?: string;
 } & Model &
   Helpers.Timestamps;
 

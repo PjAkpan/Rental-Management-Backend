@@ -128,7 +128,7 @@ const getRentReceiptTemplate = (payload: any): string => {
         from the tenant.
       </p>
       <p>
-        <strong>User ID:</strong> ${payload.userId}
+        <strong>Name:</strong> ${payload.tenantName}
       </p>
       <p>
         <strong>Room Number:</strong> ${payload.roomNumber}

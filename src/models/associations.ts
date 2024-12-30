@@ -43,4 +43,9 @@ export const setupAssociations = async () => {
     foreignKey: "id", // Link to requestId in the MaintenanceFilePath table
     targetKey: "profileId", // Link to the id of the Maintenance model});
   });
+  RentPaymentModel.belongsTo(UserProfileModel, {
+    as: "userData",
+    foreignKey: "userId", // Link to requestId in the MaintenanceFilePath table
+    targetKey: "profileId", // Link to the id of the Maintenance model});
+  });
 };

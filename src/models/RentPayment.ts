@@ -2,6 +2,7 @@ import { DataTypes, Sequelize } from "sequelize";
 import { RentPaymentShemType } from "./types";
 import { DBconnect, HttpStatusCode } from "../config";
 import { RentPaymentFilePathModel } from "./rentPaymentFiles";
+import { UserProfileModel } from "./userProfile";
 
 const RentPaymentSchema = DBconnect.define(
   "tblRentPayment",
@@ -133,7 +134,7 @@ export const findAll = async (filter: any) => {
             model: RentPaymentFilePathModel,
             as: "repaymentFiles", // Alias if needed
             on: Sequelize.literal(
-              "\"tblRentPayment\".\"id\" = \"repaymentFiles\".\"requestId\"::uuid",
+              '"tblRentPayment"."id" = "repaymentFiles"."requestId"::uuid',
             ),
           },
         ],
@@ -315,7 +316,22 @@ export const deleteRentPaymentById = async (id: string) => {
 export const findSingle = async (filter: Record<string, unknown>) => {
   try {
     filter.raw = true;
-    const RentPayment = await RentPaymentModel.findOne(filter);
+    const RentPayment = await RentPaymentModel.findOne({
+      ...filter,
+      include: [
+        {
+          model: UserProfileModel,
+          as: "userData",
+          attributes: [
+            "roomNumber",
+            "profileImage",
+            "email",
+            "fullName",
+            "phoneNumber",
+          ],
+        },
+      ],
+    });
     if (!RentPayment) {
       return {
         status: false,
