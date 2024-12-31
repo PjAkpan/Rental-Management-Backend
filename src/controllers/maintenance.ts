@@ -44,8 +44,7 @@ const addMaintenance: RequestHandler = async (req, res) => {
           return responseObject({
             res,
             statusCode: HttpStatusCode.BadRequest,
-            message:
-              "Invalid file type. Only JPEG, JPG, PNG, and PDF are allowed.",
+            message: "Invalid file type. Only JPEG, JPG and PNG are allowed.",
           });
         }
         if (pictureProof.size > maxFileSize) {
@@ -126,11 +125,20 @@ const deleteMaintenance: RequestHandler = async (req, res) => {
 };
 
 const modifyMaintenance: RequestHandler = async (req, res) => {
-  const { status, MaintenanceId, userId, subject, description } = req.body;
+  const { status, requestId, subject, description } = req.body;
   let payload: any = {};
+  const files = req.files as
+    | { [key: string]: fileUpload.UploadedFile }
+    | undefined;
+
+  // Extract files if they exist
+  const pictureProof = files?.pictureProof as
+    | fileUpload.UploadedFile
+    | undefined;
+  const videoProof = files?.videoProof as fileUpload.UploadedFile | undefined;
   try {
-    const filter = { where: { id: MaintenanceId } };
-    const check = await maintenanceModel.findMaintenance(filter);
+    const filter = { where: { id: requestId } };
+    const check: any = await maintenanceModel.findMaintenance(filter);
 
     if (!check.status) {
       return responseObject({
@@ -140,15 +148,57 @@ const modifyMaintenance: RequestHandler = async (req, res) => {
         payload: check.payload,
       });
     }
+    const getUserId = check.payload.userId;
     addIfNotEmpty(payload, "description", description);
     addIfNotEmpty(payload, "subject", subject);
-    addIfNotEmpty(payload, "userId", userId);
+    addIfNotEmpty(payload, "isActive", status);
 
-    payload.isActive = status;
     const updatedMaintenance = await maintenanceModel.updateMaintenanceById(
-      MaintenanceId,
+      requestId,
       payload,
     );
+
+    // File validation settings
+    const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const maxFileSize = 5 * 1024 * 1024; // 5 MB
+
+    let filePaths: string[] = [];
+
+    // Upload files only if they are provided
+    if (pictureProof || videoProof) {
+      const filesToUpload = [];
+      if (pictureProof) {
+        if (!allowedFileTypes.includes(pictureProof.mimetype)) {
+          return responseObject({
+            res,
+            statusCode: HttpStatusCode.BadRequest,
+            message: "Invalid file type. Only JPEG, JPG and PNG are allowed.",
+          });
+        }
+        if (pictureProof.size > maxFileSize) {
+          return responseObject({
+            res,
+            statusCode: HttpStatusCode.BadRequest,
+            message: "File size exceeds the 5 MB limit.",
+          });
+        }
+        filesToUpload.push(pictureProof);
+      }
+
+      if (videoProof) filesToUpload.push(videoProof);
+
+      filePaths = await uploadFiles(getUserId, filesToUpload, "maintenance");
+    }
+
+    if (filePaths.length > 0) {
+      await MaintenanceFilePathModel.updateMaintenanceFiles(requestId, {
+        userId: getUserId,
+        requestId: requestId,
+        pictureProof: filePaths[0] || null, // Path for pictureProof, if exists
+        videoProof: filePaths[1] || null, // Path for videoProof, if exists
+      });
+    }
+
     return responseObject({
       res,
       statusCode: updatedMaintenance.statusCode,

@@ -134,7 +134,7 @@ export const findAll = async (filter: any) => {
             model: RentPaymentFilePathModel,
             as: "repaymentFiles", // Alias if needed
             on: Sequelize.literal(
-              '"tblRentPayment"."id" = "repaymentFiles"."requestId"::uuid',
+              "\"tblRentPayment\".\"id\" = \"repaymentFiles\".\"requestId\"::uuid",
             ),
           },
         ],

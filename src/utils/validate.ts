@@ -261,6 +261,7 @@ const updatemaintenanceInputValidation = (data: unknown) => {
     description: Joi.string().optional().allow(""),
     pictureProof: Joi.string().optional().allow(""),
     videoProof: Joi.string().optional().allow(""),
+    status: Joi.string().optional().allow(""),
   });
   return schema.validate(data);
 };
