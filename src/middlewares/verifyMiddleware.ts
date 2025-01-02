@@ -28,6 +28,8 @@ import {
   generateReceiptInputValidation,
   addroomsInputValidation,
   updateroomsInputValidation,
+  addnotificationInputValidation,
+  updatenotificationInputValidation,
 } from "../utils/validate";
 import { usersModel } from "../models";
 
@@ -215,16 +217,24 @@ const validateGenerateReceiptInput = createValidationMiddleware(
   "body",
 );
 
-
-
 const validateCreateRoomsRequest = createValidationMiddleware(
   addroomsInputValidation,
-  "body"
+  "body",
 );
 
 const updateRoomsInputRequest = createValidationMiddleware(
   updateroomsInputValidation,
-  "body"
+  "body",
+);
+
+const validateCreateNotificationRequest = createValidationMiddleware(
+  addnotificationInputValidation,
+  "body",
+);
+
+const updateNotificationInputRequest = createValidationMiddleware(
+  updatenotificationInputValidation,
+  "body",
 );
 const verifyMiddleware = {
   checkIfUserIsVerified,
@@ -254,6 +264,8 @@ const verifyMiddleware = {
   validateGenerateReceiptInput,
   validateCreateRoomsRequest,
   updateRoomsInputRequest,
+  validateCreateNotificationRequest,
+  updateNotificationInputRequest,
 };
 
 export { verifyMiddleware };

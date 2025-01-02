@@ -107,3 +107,11 @@ export type roomsShemType = {
   isActive: boolean;
 } & Model &
   Helpers.Timestamps;
+
+export type notificationShemType = {
+  Id?: string;
+  name: "ordinaryuser" | "backend" | "superadmin";
+  status: string;
+  isActive: boolean;
+} & Model &
+  Helpers.Timestamps;

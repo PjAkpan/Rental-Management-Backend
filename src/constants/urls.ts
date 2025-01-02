@@ -66,4 +66,12 @@ export const urls = {
     viewSingleRooms: () => routeCreator("view/:id"),
     viewAllRooms: () => routeCreator("fetch/all"),
   },
+  notification: {
+    check: () => routeCreator("check"),
+    createNotification: () => routeCreator("add", "post"),
+    deleteNotification: () => routeCreator("delete/:id", "delete"),
+    modifyNotification: () => routeCreator("update", "put"),
+    viewSingleNotification: () => routeCreator("view/:id"),
+    viewAllNotification: () => routeCreator("fetch/all"),
+  },
 };

@@ -295,7 +295,7 @@ const addRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
+          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
       }),
   });
   return schema.validate(data);
@@ -329,7 +329,7 @@ const updateRentPaymentInputValidation = (data: unknown) => {
       )
       .messages({
         "any.invalid":
-          '"paymentDate" must be a valid date object or a string in "DD-MM-YYYY", "YYYY-MM-DD", "DD/MM/YYYY", "YYYY/MM/DD", format.',
+          "\"paymentDate\" must be a valid date object or a string in \"DD-MM-YYYY\", \"YYYY-MM-DD\", \"DD/MM/YYYY\", \"YYYY/MM/DD\", format.",
       }),
   });
   return schema.validate(data);
@@ -378,6 +378,24 @@ const updateroomsInputValidation = (data: unknown) => {
   return schema.validate(data);
 };
 
+const addnotificationInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    userID: Joi.string().required(),
+    message: Joi.string().required(),
+    socketInfo: Joi.string().required(),
+  });
+  return schema.validate(data);
+};
+const updatenotificationInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
+    message: Joi.string().optional().allow(""),
+    socketInfo: Joi.string().optional().allow(""),
+    status: Joi.boolean().optional().allow(""),
+  });
+  return schema.validate(data);
+};
+
 export {
   validateSigninInput,
   sendOtpInputValidation,
@@ -404,4 +422,6 @@ export {
   generateReceiptInputValidation,
   addroomsInputValidation,
   updateroomsInputValidation,
+  addnotificationInputValidation,
+  updatenotificationInputValidation,
 };
