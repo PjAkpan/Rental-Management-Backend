@@ -180,7 +180,7 @@ const fetchAll${capitalizedServiceName}s: RequestHandler = async (req, res) => {
       };
     }
     logger(filter);
-    const response = await ${serviceName}.findAll(filter);
+    const response = await ${serviceName}Model.findAll(filter);
     message = response.message;
     payload = response.payload;
     statusCode = response.statusCode;
@@ -321,7 +321,7 @@ export const find${capitalizedServiceName} = async (filter: Record<string, unkno
 };
 
 // Find all ${capitalizedServiceName}s
-export const findAll = async (filter: FindOptions) => {
+export const findAll = async (filter: any) => {
   try {
 
     const [allRecords, recordCount] = await Promise.all([
@@ -795,7 +795,7 @@ const update${capitalizedServiceName}InputRequest = createValidationMiddleware(
   await fs.writeFile(verifyMiddlewarePath, finalContent);
 }
 
-async function appendToFile(modelsPath, modelTypes) {
+async function appendToFile(modelsPath: any, modelTypes: any) {
   try {
     // Ensure the directory exists
     await fs.mkdir(modelsPath, { recursive: true });
@@ -810,19 +810,47 @@ async function appendToFile(modelsPath, modelTypes) {
       if (err.code !== "ENOENT") throw err; // Ignore file-not-found errors
     }
 
-    // Check if FindInfoParams already exists in the file
-    const findInfoParamsExists = existingContent.includes(
-      "export type FindInfoParams",
-    );
+    // Check for existing imports and type definitions
+    const importsToCheck = [
+      `import { Helpers } from "../types";`,
+      `import { Model } from "sequelize";`,
+    ];
 
-    // Build the new content
-    let newContent = modelTypes.content;
-    if (!findInfoParamsExists) {
-      newContent += `\nexport type FindInfoParams = {\n  orderBy?: string;\n  sort?: "ASC" | "DESC";\n  size?: number;\n  page?: number;\n  gSearch?: string;\n  filter?: Record<string, any>;\n  status?: string;\n  option?: string;\n  startDate?: string;\n  endDate?: string;\n};\n`;
+    const typeToCheck = `export type FindInfoParams = {`;
+
+    // Filter out duplicate imports
+    let newImports = importsToCheck
+      .filter((imp) => !existingContent.includes(imp))
+      .join("\n");
+
+    // Add FindInfoParams only if it doesn't already exist
+    let newTypeDefinition = "";
+    if (!existingContent.includes(typeToCheck)) {
+      newTypeDefinition = `
+export type FindInfoParams = {
+  orderBy?: string;
+  sort?: "ASC" | "DESC";
+  size?: number;
+  page?: number;
+  gSearch?: string;
+  filter?: Record<string, any>;
+  status?: string;
+  option?: string;
+  startDate?: string;
+  endDate?: string;
+};
+`;
     }
 
-    // Combine existing and new content
-    const updatedContent = existingContent + newContent;
+    // Combine new imports, type definition, and model content
+    const updatedContent = [
+      existingContent.trim(),
+      newImports,
+      modelTypes.content.trim(),
+      newTypeDefinition.trim(),
+    ]
+      .filter((section) => section.length > 0)
+      .join("\n\n");
 
     // Write the updated content back to the file
     await fs.writeFile(filePath, updatedContent, "utf8");
@@ -886,7 +914,7 @@ async function createService() {
       serviceName,
     );
 
-    await appendMiddlewareValidations(middlewaresPath, serviceName);
+    await appendMiddlewareValidations(middlewaresPath, capitalizedServiceName);
 
     console.log(`Service module '${serviceName}' generated successfully!`);
   } catch (error) {

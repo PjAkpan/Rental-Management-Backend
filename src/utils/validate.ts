@@ -261,6 +261,7 @@ const updatemaintenanceInputValidation = (data: unknown) => {
     description: Joi.string().optional().allow(""),
     pictureProof: Joi.string().optional().allow(""),
     videoProof: Joi.string().optional().allow(""),
+    status: Joi.string().optional().allow(""),
   });
   return schema.validate(data);
 };
@@ -370,7 +371,27 @@ const updateroomsInputValidation = (data: unknown) => {
   const schema = Joi.object({
     requestId: Joi.string().required(),
     roomNumber: Joi.string().required(),
-    roomStatus: Joi.string().required().valid("available", "occupied"),
+    roomStatus: Joi.string()
+      .required()
+      .valid("available", "occupied", "under maintenance"),
+  });
+  return schema.validate(data);
+};
+
+const addnotificationInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    userID: Joi.string().required(),
+    message: Joi.string().required(),
+    socketInfo: Joi.string().required(),
+  });
+  return schema.validate(data);
+};
+const updatenotificationInputValidation = (data: unknown) => {
+  const schema = Joi.object({
+    requestId: Joi.string().required(),
+    message: Joi.string().optional().allow(""),
+    socketInfo: Joi.string().optional().allow(""),
+    status: Joi.boolean().optional().allow(""),
   });
   return schema.validate(data);
 };
@@ -401,4 +422,6 @@ export {
   generateReceiptInputValidation,
   addroomsInputValidation,
   updateroomsInputValidation,
+  addnotificationInputValidation,
+  updatenotificationInputValidation,
 };
