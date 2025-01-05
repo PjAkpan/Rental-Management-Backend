@@ -279,7 +279,7 @@ const fetchAllUserss: RequestHandler = async (req, res) => {
 };
 
 const loginUsers: RequestHandler = async (req, res) => {
-  const socketMapping = req.app.get("socketMapping");
+  // const socketMapping = req.app.get("socketMapping");
 
   let statusCode = HttpStatusCode.ServiceUnavailable;
   let message = `A critical error occured. Kindly contact admin
@@ -370,12 +370,12 @@ const loginUsers: RequestHandler = async (req, res) => {
       getters.getAppSecrets().appInSec,
       getters.getAppSecrets().appInV,
     );
-    const resPonDec = await costomencryDecryptInternalCRYPTOJS(
-      "DE",
-      resPon.payload,
-      getters.getAppSecrets().appInSec,
-      getters.getAppSecrets().appInV,
-    );
+    // const resPonDec = await costomencryDecryptInternalCRYPTOJS(
+    //   "DE",
+    //   resPon.payload,
+    //   getters.getAppSecrets().appInSec,
+    //   getters.getAppSecrets().appInV,
+    // );
     // console.log("resPonDec");
     //logger(resPonDec);
     const payloadResult = {
@@ -412,9 +412,9 @@ const loginUsers: RequestHandler = async (req, res) => {
     });
 
     // Notify WebSocket server of successful login
-    const socketPayload = {
-      userId: extraDat.userID,
-    };
+    // const socketPayload = {
+    //   userId: extraDat.userID,
+    // };
 
     // req.app.get("io").emit("userLoggedIn", socketPayload);
     //THE BELOW IS TO COME FROM THE CLIENT SIDE AND NOT FROM THE SERVER SIDE
