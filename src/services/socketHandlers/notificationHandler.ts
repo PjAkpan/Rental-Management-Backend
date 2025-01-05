@@ -14,14 +14,21 @@ export const notificationHandler = (
 
   // Listen for a custom 'register' event to associate userId with socketId
   socketInstance.on("userLoggedIn", (userId: any) => {
-    const userIds = userId.userId;
-    console.log(
-      `Registering user ${userIds} with socketId ${socketInstance.id}`,
-    );
-    socketMapping.set(userIds, socketInstance.id);
-    socketInstance.emit("onlineUsers", { ...socketMapping });
-  });
+    if (userId && userId.userId) {
+      const userIds = userId.userId;
+      console.log(
+        `Registering user ${userIds} with socketId ${socketInstance.id}`,
+      );
 
+      socketMapping.set(userIds, socketInstance.id);
+      const socketMappingArray = Object.fromEntries(socketMapping);
+
+      // Emit online users to the client
+      socketInstance.emit("onlineUsers", socketMappingArray);
+    } else {
+      console.error("Invalid userId format in userLoggedIn event");
+    }
+  });
   // Handle specific notification events
   socketInstance.on("subscribe", (topic: string) => {
     console.log(`Client subscribed to topic: ${topic}`);
