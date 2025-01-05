@@ -5,3 +5,4 @@ export { default as captureInflowANDOutput } from "./captureInflowANDOutput";
 export { default as helmet } from "helmet";
 export * from "./verifyMiddleware";
 export * from "./general";
+export * from "./socketNotifications";

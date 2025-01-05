@@ -8,6 +8,7 @@ import {
   captureInflowANDOutput,
   forbiddenPaths,
   requestHeaderInspection,
+  setupNotificationsSocket,
 } from "./middlewares";
 import { logger } from "netwrap";
 import path from "path";
@@ -15,8 +16,12 @@ import requestIp from "request-ip";
 import fileUpload from "express-fileupload";
 import { joinTables } from "./models";
 const NODE_BUILD_ENV = process.env.NODE_BUILD_ENV || "development";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 const app = express();
+
+const server = createServer(app);
 
 const corsOptions = {
   origin: "*",
@@ -46,6 +51,12 @@ app.use(
   }),
 );
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const socketIo: any = new Server(server, {
+  cors: corsOptions,
+});
+
+// Use the socket notification middleware
+setupNotificationsSocket(socketIo);
 
 const routeFolder = path.resolve(__dirname, "./routers");
 const port = getters.getAppPort();
@@ -64,7 +75,7 @@ loadRoutes(routeFolder, app, "/api", NODE_BUILD_ENV as string)
     app.use(customWildcardHandler);
     await postgresLoader();
     await joinTables.setupAssociations();
-    app.listen(port, () => {
+    server.listen(port, () => {
       logger(`${getters.geti18ns().LOGS.RUNNING_APP} ${port}`);
       logger(`Running on - ${getters.getNodeEnv()}`);
     });
