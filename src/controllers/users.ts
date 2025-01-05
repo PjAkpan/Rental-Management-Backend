@@ -279,6 +279,8 @@ const fetchAllUserss: RequestHandler = async (req, res) => {
 };
 
 const loginUsers: RequestHandler = async (req, res) => {
+  const socketMapping = req.app.get("socketMapping");
+
   let statusCode = HttpStatusCode.ServiceUnavailable;
   let message = `A critical error occured. Kindly contact admin
    for details about a possible solution to this error`;
@@ -408,6 +410,19 @@ const loginUsers: RequestHandler = async (req, res) => {
       activeSession: updateData,
       deviceId: deviceId,
     });
+
+    // Notify WebSocket server of successful login
+    const socketPayload = {
+      userId: extraDat.userID,
+    };
+
+    // req.app.get("io").emit("userLoggedIn", socketPayload);
+    // Access the notifications namespace and emit the event
+    const notificationsNamespace = req.app
+      .get("io")
+      .of("/api/instantNotifications");
+    notificationsNamespace.emit("userLoggedIn", socketPayload);
+
     statusCode = HttpStatusCode.OK;
     message = "Login successful";
     payload = { encryptedString: resPon.payload, verificationToken, extraDat };

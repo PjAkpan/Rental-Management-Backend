@@ -1,13 +1,25 @@
 import { Socket } from "socket.io";
 
-export const notificationHandler = (socketInstance: Socket) => {
-  console.log("Client connected to Notifications", socketInstance);
+export const notificationHandler = (
+  socketInstance: Socket,
+  socketMapping: Map<string, string>,
+) => {
+  console.log("Client connected to Notifications", socketInstance.id);
 
   // Emit a welcome message
   socketInstance.emit(
     "notificationWelcome",
     "Welcome to the notification service!",
   );
+
+  // Listen for a custom 'register' event to associate userId with socketId
+  socketInstance.on("userLoggedIn", (userId: string) => {
+    console.log(
+      `Registering user ${userId} with socketId ${socketInstance.id}`,
+    );
+    socketMapping.set(userId, socketInstance.id);
+    socketInstance.emit("onlineUsers", socketMapping);
+  });
 
   // Handle specific notification events
   socketInstance.on("subscribe", (topic: string) => {
@@ -20,8 +32,15 @@ export const notificationHandler = (socketInstance: Socket) => {
     socketInstance.leave(topic); // Remove client from the topic's room
   });
 
+  // Handle disconnection and cleanup
   socketInstance.on("disconnect", (reason: any) => {
-    console.log("Notification client disconnected:", reason);
-    socketInstance.emit("signOut", `Client disconnected: ${reason}`);
+    console.log(`Socket disconnected: ${socketInstance.id}, reason: ${reason}`);
+    // Find and remove the userId associated with this socketId
+    for (const [userId, socketId] of socketMapping.entries()) {
+      if (socketId === socketInstance.id) {
+        socketMapping.delete(userId);
+        break;
+      }
+    }
   });
 };

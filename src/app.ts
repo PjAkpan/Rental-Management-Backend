@@ -22,7 +22,6 @@ import { Server } from "socket.io";
 const app = express();
 
 const server = createServer(app);
-
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -54,9 +53,15 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const socketIo: any = new Server(server, {
   cors: corsOptions,
 });
+// Example shared Map for userId-socketId mapping
+const socketMapping = new Map();
+app.set("socketMapping", socketMapping);
+
+// Attach the socket instance to the app
+app.set("io", socketIo);
 
 // Use the socket notification middleware
-setupNotificationsSocket(socketIo);
+setupNotificationsSocket(socketIo, socketMapping);
 
 const routeFolder = path.resolve(__dirname, "./routers");
 const port = getters.getAppPort();
