@@ -13,12 +13,13 @@ export const notificationHandler = (
   );
 
   // Listen for a custom 'register' event to associate userId with socketId
-  socketInstance.on("userLoggedIn", (userId: string) => {
+  socketInstance.on("userLoggedIn", (userId: any) => {
+    const userIds = userId.userId;
     console.log(
-      `Registering user ${userId} with socketId ${socketInstance.id}`,
+      `Registering user ${userIds} with socketId ${socketInstance.id}`,
     );
-    socketMapping.set(userId, socketInstance.id);
-    socketInstance.emit("onlineUsers", socketMapping);
+    socketMapping.set(userIds, socketInstance.id);
+    socketInstance.emit("onlineUsers", { ...socketMapping });
   });
 
   // Handle specific notification events

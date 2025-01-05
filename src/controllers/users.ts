@@ -353,7 +353,7 @@ const loginUsers: RequestHandler = async (req, res) => {
         "Previous session token is invalid or expired. Proceeding with login.",
       );
     }
-    console.log(payload, "--------");
+    // console.log(payload, "--------");
     const payload2Result = {
       UserId: loginUserService.payload.id,
       fullName: loginUserService.payload.fullName,
@@ -376,8 +376,8 @@ const loginUsers: RequestHandler = async (req, res) => {
       getters.getAppSecrets().appInSec,
       getters.getAppSecrets().appInV,
     );
-    console.log("resPonDec");
-    logger(resPonDec);
+    // console.log("resPonDec");
+    //logger(resPonDec);
     const payloadResult = {
       UserId: loginUserService.payload.id,
       email: loginUserService.payload.email,
@@ -417,11 +417,14 @@ const loginUsers: RequestHandler = async (req, res) => {
     };
 
     // req.app.get("io").emit("userLoggedIn", socketPayload);
-    // Access the notifications namespace and emit the event
-    const notificationsNamespace = req.app
-      .get("io")
-      .of("/api/instantNotifications");
-    notificationsNamespace.emit("userLoggedIn", socketPayload);
+    //THE BELOW IS TO COME FROM THE CLIENT SIDE AND NOT FROM THE SERVER SIDE
+    // const notificationsNamespace = req.app
+    //   .get("io")
+    //   .of("/api/instantNotifications");
+    // console.log("Emitting to namespace: /api/instantNotifications");
+
+    // // Emit to all connected clients (this is broadcast to everyone in the namespace)
+    // notificationsNamespace.emit("userLoggedIn", socketPayload);
 
     statusCode = HttpStatusCode.OK;
     message = "Login successful";
