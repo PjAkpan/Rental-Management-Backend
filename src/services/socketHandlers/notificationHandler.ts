@@ -13,22 +13,40 @@ export const notificationHandler = (
   );
 
   // Listen for a custom 'register' event to associate userId with socketId
-  socketInstance.on("userLoggedIn", (userId: any) => {
-    if (userId && userId.userId) {
-      const userIds = userId.userId;
+  socketInstance.on("userLoggedIn", (data: { userId: string }) => {
+    const { userId } = data;
+
+    if (userId) {
       console.log(
-        `Registering user ${userIds} with socketId ${socketInstance.id}`,
+        `Attempting to register user ${userId} with socketId ${socketInstance.id}`,
       );
 
-      socketMapping.set(userIds, socketInstance.id);
-      const socketMappingArray = Object.fromEntries(socketMapping);
+      // Check if the socketId is already in use
+      for (const [existingUserId, socketId] of socketMapping.entries()) {
+        if (socketId === socketInstance.id) {
+          console.warn(
+            `SocketId ${socketInstance.id} is already associated with userId ${existingUserId}. Removing old association.`,
+          );
+          socketMapping.delete(existingUserId); // Remove old association
+          break;
+        }
+      }
 
-      // Emit online users to the client
-      socketInstance.emit("onlineUsers", socketMappingArray);
+      // Register the new user with the socketId
+      socketMapping.set(userId, socketInstance.id);
+
+      // Convert Map to an array of objects for easy access
+      const onlineUsers = Array.from(socketMapping.entries()).map(
+        ([id, socketId]) => ({ userId: id, socketId }),
+      );
+
+      // Emit the updated list of online users
+      socketInstance.emit("onlineUsers", onlineUsers);
     } else {
       console.error("Invalid userId format in userLoggedIn event");
     }
   });
+
   // Handle specific notification events
   socketInstance.on("subscribe", (topic: string) => {
     console.log(`Client subscribed to topic: ${topic}`);
