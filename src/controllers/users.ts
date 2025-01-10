@@ -400,9 +400,11 @@ const loginUsers: RequestHandler = async (req, res) => {
         loginTime: new Date(), // Track the login time
       },
     ];
+
     const extraDat = {
       userID: payloadResult.UserId,
       profileImage: loginUserService.payload.profileImage,
+      loginTime: updateData[0].loginTime,
     };
     await usersModel.updateUsersById(loginUserService.payload.id, {
       activeSession: updateData,
