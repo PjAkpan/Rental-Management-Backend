@@ -98,4 +98,5 @@ declare namespace Helpers {
     order?: [string, string][]; // Optional property
     where?: unknown;
   };
+ 
 }

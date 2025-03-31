@@ -1,1 +1,3 @@
-export { notificationHandler } from "./notificationHandler";
+import * as notificationService from "./notificationHandler";
+
+export default { notificationHandler: notificationService };

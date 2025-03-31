@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { DataTypes } from "sequelize";
 import { usersShemType } from "./types";
-import { DBconnect, HttpStatusCode } from "../config";
-import { logger } from "netwrap";
+import {  DBconnect, HttpStatusCode } from "../config";
+
 
 const UserProfileSchema = DBconnect.define(
   "tblUserProfile",

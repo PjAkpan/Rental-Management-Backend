@@ -5,6 +5,8 @@ export type ActiveSession = {
   deviceId: string;
   token: string;
   loginTime: Date;
+  socketId?:string;
+  lastActive?:Date;
 };
 
 export type usersShemType = {
@@ -25,7 +27,7 @@ export type usersShemType = {
   password: string; // Should not be stored as plain text
   ipAddress?: string[]; // Array of strings for multiple IP addresses
   status: string;
-  activeSession?: ActiveSession[];
+  activeSession?: ActiveSession[] ;
   isActive: boolean;
   isVerified?: boolean;
   referenceId?: string;

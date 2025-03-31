@@ -263,6 +263,89 @@ export const deleteUsersById = async (id: string) => {
   }
 };
 
-export function findUserByEmail(email: any) {
-  throw new Error("Function not implemented.");
-}
+export const getUserIdsByRole = async (role: string): Promise<string[]> => {
+  try {
+    const result = await UsersModel.findAll({
+      where: { role, isActive: true, isDeleted: false },
+      attributes: ["id"], // Only fetch IDs
+      raw: true,
+    });
+
+    if (!result || result.length === 0) {
+      logger(`No active users found with role: ${role}`);
+      return [];
+    }
+
+    return result.map((user) => (user as any).id);
+  } catch (error:any) {
+    logger(`Error fetching user IDs by role ${role}:`, error);
+    throw error;
+  }
+};
+
+
+export const getSocketIdsByUserIds = async (userIds: string[]): Promise<string[]> => {
+  try {
+    if (!userIds || userIds.length === 0) {
+      return [];
+    }
+
+    const result = await UsersModel.findAll({
+      where: { 
+        id: userIds,
+        isActive: true,
+        isDeleted: false 
+      },
+      attributes: ['activeSession'],
+      raw: true
+    });
+
+    if (!result || result.length === 0) {
+      logger('No active sessions found for provided user IDs');
+      return [];
+    }
+
+  
+    return result.map((user) => (user as unknown as { id: string }).id).filter((id): id is string => !!id);
+  } catch (error) {
+    logger('Error fetching socket IDs by user IDs:', (error as any));
+    throw error;
+  }
+};
+
+// /**
+//  * Utility function to update user's active session
+//  * @param userId - User ID
+//  * @param socketId - Socket ID to store
+//  */
+// export const updateUserSocketSession = async (userId: string, socketId: string): Promise<boolean> => {
+//   try {
+//     const updateResult = await UsersModel.update(
+//       { activeSession: { socketId, lastActive: new Date() } },
+//       { where: { id: userId } }
+//     );
+
+//     return updateResult[0] > 0;
+//   } catch (error) {
+//     logger.error(`Error updating socket session for user ${userId}:`, error);
+//     return false;
+//   }
+// };
+
+// /**
+//  * Utility function to clear user's active session
+//  * @param socketId - Socket ID to clear
+//  */
+// export const clearSocketSession = async (socketId: string): Promise<boolean> => {
+//   try {
+//     const updateResult = await UsersModel.update(
+//       { activeSession: null },
+//       { where: { activeSession: { socketId } }
+//     );
+
+//     return updateResult[0] > 0;
+//   } catch (error) {
+//     logger.error(`Error clearing socket session ${socketId}:`, error);
+//     return false;
+//   }
+// };

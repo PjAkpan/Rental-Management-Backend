@@ -1,4 +1,5 @@
-import { notificationHandler } from "../services/socketHandlers";
+
+import { notificationHandler } from "../services/socketHandlers/notificationHandlerBackUp2";
 import { Server } from "socket.io";
 
 export const setupNotificationsSocket = (
